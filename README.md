@@ -1,36 +1,148 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dove Inn Hotel
+
+A full-stack hotel booking website for a 12-room boutique hotel in Lahore, Pakistan. It includes a public-facing marketing/booking site (home, rooms, gallery, about, contact, multi-step booking flow) and a password-protected manager portal for reviewing and confirming bookings — all backed by a real Supabase database.
+
+## Live Demo
+
+**[https://doveinn-five.vercel.app/](https://doveinn-five.vercel.app/)**
+
+---
+
+## Why I Chose This Framework
+
+I built this on **Next.js 16 (App Router)** rather than a plain React SPA or a separate frontend/backend split, for a few reasons specific to a hotel site:
+
+- **File-based routing that mirrors the sitemap.** Nested folders (`app/(public)/rooms/[slug]`) map directly to real URLs like `/rooms/master-suite-7`, and route groups (`(public)`, `(portal)`) let the marketing site and the manager dashboard have completely different layouts (navbar/footer vs. sidebar) without duplicating code.
+- **Static generation for the pages that matter for SEO.** The homepage, room listing, and every individual room page are statically generated at build time (`generateStaticParams` pulls all room slugs from Supabase), so search engines and first-time visitors get fast, fully-rendered HTML instead of a blank shell waiting on JavaScript — important for a hotel that depends on organic search and Google Maps traffic.
+- **Built-in image optimization.** `next/image` automatically serves resized, lazy-loaded room photos across the gallery, room cards, and detail pages without a separate image CDN or manual `srcset` work.
+- **API routes live next to the app.** Booking creation, availability checks, and booking status updates (`app/api/...`) run as serverless functions in the same project — no separate backend service to deploy or CORS-configure.
+- **One-command deploys.** Next.js deploys natively to Vercel with zero config, including the dynamic API routes and the middleware-based auth guard on the manager portal.
+
+## Tech Stack
+
+| Category | Technology |
+|---|---|
+| Framework | [Next.js 16](https://nextjs.org/) (App Router, Turbopack) |
+| Language | TypeScript |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com/) |
+| UI Components | [shadcn/ui](https://ui.shadcn.com/) (on top of [Base UI](https://base-ui.com/)) |
+| Icons | [lucide-react](https://lucide.dev/) |
+| Backend / Database | [Supabase](https://supabase.com/) (Postgres, Auth, Row Level Security) |
+| Auth | Supabase Auth (`@supabase/ssr`) via Next.js middleware |
+| Forms & utilities | `date-fns`, `class-variance-authority`, `clsx`, `tailwind-merge` |
+| Deployment | [Vercel](https://vercel.com/) |
+
+## Project Structure
+
+```
+doveinn/
+├── middleware.ts              # Protects /dashboard routes; redirects unauthenticated users to /login
+├── components.json            # shadcn/ui configuration (style, aliases, icon library)
+├── app/
+│   ├── layout.tsx             # Root layout — loads Playfair Display & Inter fonts
+│   ├── globals.css            # Tailwind v4 theme tokens, CSS variables, base styles
+│   ├── (public)/              # Public marketing site — wrapped in Navbar + Footer
+│   │   ├── layout.tsx         #   SEO metadata (OpenGraph, Twitter, JSON-LD Hotel schema)
+│   │   ├── page.tsx           #   Home page (hero, featured rooms, why-choose-us, CTA)
+│   │   ├── rooms/              #   Room listing (+ loading skeleton)
+│   │   │   └── [slug]/         #   Individual room detail page (statically generated)
+│   │   ├── gallery/            #   Photo gallery with category filters + lightbox
+│   │   ├── about/               #   Story, values, quick facts
+│   │   ├── contact/             #   Contact info, embedded map, contact form
+│   │   └── booking/             #   3-step booking flow + confirmation page
+│   ├── (portal)/               # Manager portal — no public Navbar/Footer
+│   │   ├── login/page.tsx      #   Manager sign-in (Supabase Auth)
+│   │   └── dashboard/           #   Sidebar-based layout, auth-protected
+│   │       ├── page.tsx         #     Stats + recent bookings
+│   │       ├── bookings/         #     All bookings, filterable, confirm/reject
+│   │       ├── bookings/[ref]/   #     Single booking detail + manager notes
+│   │       └── rooms/            #     Room price management
+│   └── api/                    # Serverless API routes
+│       ├── bookings/route.ts    #   POST — create a new booking
+│       ├── bookings/[ref]/route.ts # PATCH — confirm/reject a booking, blocks dates
+│       └── availability/route.ts  # GET — check if a room is free for given dates
+├── components/
+│   ├── ui/                    # shadcn/ui primitives (button, card, badge, sheet, skeleton, spinner, etc.)
+│   ├── layout/                # Navbar, Footer, WhatsAppButton
+│   ├── rooms/                 # RoomCard, RoomsGrid, BookingSidebar, loading skeletons
+│   ├── booking/                # StepIndicator for the multi-step booking flow
+│   ├── contact/                # ContactForm
+│   └── portal/                 # Sidebar, StatusBadge, BookingsTable, BookingDetail, skeletons
+├── lib/
+│   ├── supabase/               # client.ts (browser), server.ts (cookie-aware), admin.ts (service role),
+│   │                            # public.ts (anon, for static generation), rooms.ts / bookings.ts (queries + types)
+│   ├── data/                   # Original hardcoded room/booking fixtures, kept as fallback reference
+│   └── utils.ts                # `cn()` class-merging helper
+├── public/
+│   └── images/rooms/            # Real hotel photography (rooms, bathrooms, kitchen, exterior)
+└── supabase/
+    └── schema.sql              # Full database schema: rooms, bookings, room_availability tables + RLS policies
+```
+
+## Design System
+
+Defined in `app/globals.css` as CSS custom properties (Tailwind v4's CSS-first config — there is no `tailwind.config.ts`).
+
+**Colors**
+| Token | Value | Usage |
+|---|---|---|
+| `--background` | `#FAFAF8` | Warm off-white page background |
+| `--primary` | `#1C1C1C` | Near-black — dark sections, primary buttons, text |
+| `--gold` | `#C9A84C` | Accent color — CTAs, prices, active states, badges |
+| `--foreground` | `#1C1C1C` | Body text |
+| `--muted` / `--border` | `oklch(...)` neutrals | Card backgrounds, dividers, secondary text |
+
+**Typography**
+- **Headings** — `Playfair Display` (serif), loaded via `next/font/google`, exposed as the `font-heading` utility class.
+- **Body** — `Inter` (sans-serif), the default `font-sans`.
+
+**Shape & Spacing**
+- Border radius is driven by a single `--radius: 0.625rem` variable, scaled into `--radius-sm` through `--radius-4xl` so every card, button, and badge shares one consistent corner language.
+- Interactive elements (`components/ui/button.tsx`) share a common set of states: a gold `box-shadow` glow on hover, a `scale-95` press effect on `:active`, and `touch-action: manipulation` globally on `a`/`button` for instant mobile tap response.
+
+## Component-Based Structure
+
+- **`RoomCard`** — the reusable room summary card (image, price, capacity, amenities, "View Details" / "Book Now") used on the homepage, the rooms listing, and the "You May Also Like" section.
+- **`RoomsGrid`** — client-side wrapper around `RoomCard` that adds the All/Master/Twin filter tabs.
+- **`BookingSidebar`** — sticky price/date-picker/booking widget on the room detail page.
+- **`StepIndicator`** — the 3-step progress UI (Guest Details → Summary → Payment) on the booking page.
+- **`Navbar` / `Footer` / `WhatsAppButton`** — shared public site chrome; the WhatsApp button links out with a pre-filled inquiry message.
+- **`Sidebar`** — manager portal navigation (dashboard/bookings/rooms + logout).
+- **`BookingsTable` / `BookingDetail` / `StatusBadge`** — portal booking-management UI, including live Confirm/Reject actions against the API.
+- **`Skeleton` / `RoomCardSkeleton` / `BookingRowSkeleton` / `Spinner`** — loading states used in `loading.tsx` route files and in-flight button states.
+- **`components/ui/*`** — shadcn/ui primitives (Button, Card, Badge, Input, Label, Sheet, Textarea, Separator) that everything else is built from.
+
+## Responsive Behavior
+
+The layout is mobile-first throughout, using Tailwind's `sm:` (640px), `md:` (768px), and `lg:` (1024px) breakpoints:
+
+- **Room grids** (`RoomsGrid`, home page, gallery) go `grid-cols-1` on mobile → `sm:grid-cols-2` on tablet → `lg:grid-cols-3` on desktop.
+- **Navbar** collapses its horizontal link list into a `Sheet` slide-out drawer below `md:`, triggered by a hamburger icon.
+- **Room detail page** stacks the image gallery above the booking sidebar on mobile (`grid-cols-1`) and switches to a two-column `lg:grid-cols-[1fr_380px]` layout on desktop, where the sidebar becomes sticky.
+- **Manager portal sidebar** is hidden on mobile in favor of a top bar + slide-out `Sheet`, and becomes a fixed 250px sidebar at `md:`.
+- **Hero, section padding, and typography** scale up via responsive utilities (e.g. `text-4xl md:text-5xl`, `py-16 md:py-28`) rather than fixed breakpoints, so spacing feels proportional at every screen size.
 
 ## Getting Started
 
-First, run the development server:
+**Prerequisites:** Node.js 20+, a Supabase project (see `supabase/schema.sql` for the schema).
 
 ```bash
+# Install dependencies
+npm install
+
+# Create .env.local with your Supabase credentials
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Run the dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) for the public site, or [http://localhost:3000/login](http://localhost:3000/login) for the manager portal.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Production build
+npm run build
+npm run start
+```
