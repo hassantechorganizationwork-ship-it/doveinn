@@ -27,6 +27,7 @@ export function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!isHome) return;
@@ -36,6 +37,11 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isHome]);
 
+  // Close the mobile menu whenever the route actually changes.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   // Transparent-over-hero only applies on the home page; every other page
   // keeps a solid navbar since it has no full-bleed dark hero to sit on.
   const solid = !isHome || scrolled;
@@ -44,7 +50,7 @@ export function Navbar() {
     <header
       className={cn(
         "fixed top-0 z-50 w-full transition-colors duration-300",
-        solid ? "bg-primary shadow-md" : "bg-transparent"
+        solid ? "bg-primary" : "bg-transparent"
       )}
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
@@ -77,7 +83,7 @@ export function Navbar() {
           </Button>
         </div>
 
-        <Sheet>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger
             className="text-primary-foreground md:hidden"
             aria-label="Open menu"
@@ -96,13 +102,14 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className="text-base font-medium text-primary"
+                  onClick={() => setMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
               <Button
                 className="mt-4 bg-gold text-gold-foreground hover:bg-gold/90"
-                render={<Link href="/rooms" />}
+                render={<Link href="/rooms" onClick={() => setMenuOpen(false)} />}
               >
                 Book Now
               </Button>

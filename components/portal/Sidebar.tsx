@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, LayoutDashboard, CalendarCheck, BedDouble, LogOut } from "lucide-react";
@@ -21,7 +21,13 @@ const NAV_LINKS = [
   { href: "/dashboard/rooms", label: "Rooms", icon: BedDouble },
 ];
 
-function SidebarNav({ pathname }: { pathname: string }) {
+function SidebarNav({
+  pathname,
+  onNavigate,
+}: {
+  pathname: string;
+  onNavigate?: () => void;
+}) {
   return (
     <nav className="flex flex-1 flex-col gap-1 px-3">
       {NAV_LINKS.map((link) => {
@@ -34,6 +40,7 @@ function SidebarNav({ pathname }: { pathname: string }) {
           <Link
             key={link.href}
             href={link.href}
+            onClick={onNavigate}
             className={cn(
               "flex items-center gap-3 rounded-md border-l-4 border-transparent px-3 py-2.5 text-sm font-medium text-primary-foreground/70 transition-colors hover:text-gold",
               isActive && "border-gold text-gold"
@@ -85,6 +92,11 @@ function LogoutButton() {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   return (
     <>
@@ -103,7 +115,7 @@ export function Sidebar() {
             Manager Portal
           </p>
         </div>
-        <Sheet>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger
             className="text-primary-foreground"
             aria-label="Open menu"
@@ -116,7 +128,7 @@ export function Sidebar() {
                 Dove Inn
               </SheetTitle>
             </SheetHeader>
-            <SidebarNav pathname={pathname} />
+            <SidebarNav pathname={pathname} onNavigate={() => setMenuOpen(false)} />
             <LogoutButton />
           </SheetContent>
         </Sheet>
