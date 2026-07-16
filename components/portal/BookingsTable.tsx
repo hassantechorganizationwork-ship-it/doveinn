@@ -75,7 +75,7 @@ export function BookingsTable({ bookings }: { bookings: BookingWithRoom[] }) {
             key={f}
             onClick={() => setFilter(f)}
             className={cn(
-              "rounded-full px-4 py-2 text-sm font-medium transition-all active:scale-95",
+              "cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-all active:scale-95",
               filter === f
                 ? "bg-gold text-gold-foreground"
                 : "border border-border bg-white text-primary hover:bg-muted"

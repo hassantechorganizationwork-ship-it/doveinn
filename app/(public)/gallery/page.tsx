@@ -80,7 +80,7 @@ export default function GalleryPage() {
               key={f}
               onClick={() => setFilter(f)}
               className={cn(
-                "rounded-full px-5 py-2 text-sm font-medium transition-all active:scale-95",
+                "cursor-pointer rounded-full px-5 py-2 text-sm font-medium transition-all active:scale-95",
                 filter === f
                   ? "bg-gold text-gold-foreground"
                   : "border border-border text-primary hover:bg-muted"
@@ -128,7 +128,7 @@ export default function GalleryPage() {
             type="button"
             onClick={() => setSelectedImage(null)}
             aria-label="Close"
-            className="absolute top-6 right-6 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+            className="absolute top-6 right-6 flex size-10 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
           >
             <X className="size-6" />
           </button>

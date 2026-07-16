@@ -82,7 +82,7 @@ function LogoutButton() {
     <button
       onClick={handleLogout}
       disabled={loggingOut}
-      className="flex items-center gap-3 px-6 py-5 text-sm font-medium text-red-400 transition-colors hover:text-red-300 disabled:opacity-50"
+      className="flex cursor-pointer items-center gap-3 px-6 py-5 text-sm font-medium text-red-400 transition-colors hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {loggingOut ? <Spinner /> : <LogOut className="size-5" />}
       {loggingOut ? "Logging out..." : "Logout"}

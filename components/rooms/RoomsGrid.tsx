@@ -28,7 +28,7 @@ export function RoomsGrid({ rooms }: { rooms: Room[] }) {
               key={f.key}
               onClick={() => setFilter(f.key)}
               className={cn(
-                "rounded-full px-5 py-2 text-sm font-medium transition-all active:scale-95",
+                "cursor-pointer rounded-full px-5 py-2 text-sm font-medium transition-all active:scale-95",
                 filter === f.key
                   ? "bg-gold text-gold-foreground"
                   : "border border-border text-primary hover:bg-muted"
