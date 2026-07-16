@@ -12,8 +12,8 @@ const QUICK_LINKS = [
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid gap-12 md:grid-cols-3">
+      <div className="mx-auto max-w-7xl px-6 py-10 md:py-16">
+        <div className="grid gap-8 md:grid-cols-3 md:gap-12">
           <div>
             <h3 className="font-heading text-2xl text-gold">Dove Inn Hotel</h3>
             <p className="mt-3 max-w-xs text-sm text-primary-foreground/70">

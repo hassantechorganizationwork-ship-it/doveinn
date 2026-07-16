@@ -33,7 +33,7 @@ function ConfirmationContent() {
   }, [roomSlug]);
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col items-center px-6 py-20 text-center md:py-28">
+    <div className="mx-auto flex max-w-lg flex-col items-center px-6 py-12 text-center md:py-20 lg:py-28">
       <CircleCheck className="size-16 text-green-600" />
 
       <h1 className="mt-6 font-heading text-3xl text-primary md:text-4xl">

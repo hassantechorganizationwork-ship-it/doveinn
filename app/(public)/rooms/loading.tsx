@@ -5,7 +5,7 @@ export default function RoomsLoading() {
     <div>
       <section className="bg-primary py-16">
         <div className="mx-auto max-w-6xl px-6">
-          <h1 className="font-heading text-4xl text-primary-foreground md:text-5xl">
+          <h1 className="font-heading text-3xl text-primary-foreground sm:text-4xl md:text-5xl">
             Our Rooms
           </h1>
         </div>

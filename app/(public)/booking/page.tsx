@@ -26,7 +26,7 @@ type FormErrors = Partial<Record<"fullName" | "email" | "phone", string>>;
 
 function InvalidState({ message }: { message: string }) {
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center px-6 py-32 text-center">
+    <div className="mx-auto flex max-w-md flex-col items-center px-6 py-16 text-center md:py-32">
       <h1 className="font-heading text-2xl text-primary">{message}</h1>
       <Button
         className="mt-8 bg-gold text-gold-foreground hover:bg-gold/90"

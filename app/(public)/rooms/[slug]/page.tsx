@@ -50,7 +50,7 @@ export default async function RoomDetailPage({
 
   if (!room) {
     return (
-      <div className="mx-auto flex max-w-2xl flex-col items-center px-6 py-32 text-center">
+      <div className="mx-auto flex max-w-2xl flex-col items-center px-6 py-16 text-center md:py-32">
         <h1 className="font-heading text-3xl text-primary">Room not found</h1>
         <p className="mt-3 text-muted-foreground">
           The room you&apos;re looking for doesn&apos;t exist or may have been
@@ -107,7 +107,7 @@ export default async function RoomDetailPage({
           {/* LEFT COLUMN */}
           <div>
             {/* IMAGE SECTION */}
-            <div className="relative h-72 w-full overflow-hidden rounded-xl md:h-[420px]">
+            <div className="relative h-56 w-full overflow-hidden rounded-xl sm:h-72 md:h-[420px]">
               <Image
                 src={image}
                 alt={room.name}

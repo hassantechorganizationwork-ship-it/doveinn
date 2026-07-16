@@ -80,7 +80,7 @@ export default async function Home() {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">
             Welcome to
           </p>
-          <h1 className="mt-3 font-heading text-5xl text-primary-foreground md:text-7xl">
+          <h1 className="mt-3 font-heading text-3xl text-primary-foreground sm:text-5xl md:text-7xl">
             Dove Inn Hotel
           </h1>
           <p className="mt-4 text-lg font-medium text-gold md:text-xl">
@@ -108,7 +108,7 @@ export default async function Home() {
       </section>
 
       {/* ROOM TYPES SECTION */}
-      <section className="mx-auto max-w-6xl px-6 py-20 md:py-28">
+      <section className="mx-auto max-w-6xl px-6 py-12 md:py-20 lg:py-28">
         <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
           Our Rooms
         </h2>
@@ -141,7 +141,7 @@ export default async function Home() {
 
       {/* FEATURED ROOMS SECTION */}
       {featuredRooms.length > 0 && (
-        <section className="bg-background py-20 md:py-28">
+        <section className="bg-background py-12 md:py-20 lg:py-28">
           <div className="mx-auto max-w-6xl px-6">
             <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
               Featured Rooms
@@ -167,7 +167,7 @@ export default async function Home() {
       )}
 
       {/* WHY CHOOSE US SECTION */}
-      <section className="bg-background py-20 md:py-28">
+      <section className="bg-background py-12 md:py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
             Why Choose Dove Inn?
@@ -192,7 +192,7 @@ export default async function Home() {
       </section>
 
       {/* CTA BANNER SECTION */}
-      <section className="bg-primary py-20 md:py-28">
+      <section className="bg-primary py-12 md:py-20 lg:py-28">
         <div className="mx-auto max-w-2xl px-6 text-center">
           <h2 className="font-heading text-3xl text-primary-foreground md:text-4xl">
             Ready for a Comfortable Stay?

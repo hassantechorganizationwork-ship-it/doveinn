@@ -44,9 +44,9 @@ export default function AboutPage() {
   return (
     <div>
       {/* PAGE HEADER */}
-      <section className="bg-primary py-16">
+      <section className="bg-primary py-10 md:py-16">
         <div className="mx-auto max-w-6xl px-6">
-          <h1 className="font-heading text-4xl text-primary-foreground md:text-5xl">
+          <h1 className="font-heading text-3xl text-primary-foreground sm:text-4xl md:text-5xl">
             About Us
           </h1>
           <p className="mt-4 flex items-center gap-2 text-sm text-primary-foreground/60">
@@ -60,7 +60,7 @@ export default function AboutPage() {
       </section>
 
       {/* OUR STORY */}
-      <section className="mx-auto max-w-6xl px-6 py-20 md:py-28">
+      <section className="mx-auto max-w-6xl px-6 py-12 md:py-20 lg:py-28">
         <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
           <div>
             <h2 className="font-heading text-3xl text-primary md:text-4xl">
@@ -89,7 +89,7 @@ export default function AboutPage() {
       </section>
 
       {/* OUR VALUES */}
-      <section className="bg-background py-20 md:py-28">
+      <section className="bg-background py-12 md:py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
             Our Values
@@ -98,7 +98,7 @@ export default function AboutPage() {
             {VALUES.map((value) => (
               <div
                 key={value.title}
-                className="flex flex-col items-center rounded-xl border border-border p-8 text-center"
+                className="flex flex-col items-center rounded-xl border border-border p-6 text-center md:p-8"
               >
                 <div className="flex size-16 items-center justify-center rounded-full bg-gold/10">
                   <value.icon className="size-8 text-gold" />
@@ -116,7 +116,7 @@ export default function AboutPage() {
       </section>
 
       {/* QUICK FACTS */}
-      <section className="mx-auto max-w-4xl px-6 py-20 md:py-28">
+      <section className="mx-auto max-w-4xl px-6 py-12 md:py-20 lg:py-28">
         <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
           Quick Facts
         </h2>
@@ -136,7 +136,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA BANNER */}
-      <section className="bg-primary py-20 md:py-28">
+      <section className="bg-primary py-12 md:py-20 lg:py-28">
         <div className="mx-auto max-w-2xl px-6 text-center">
           <h2 className="font-heading text-3xl text-primary-foreground md:text-4xl">
             Experience Dove Inn for Yourself
