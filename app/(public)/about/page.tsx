@@ -44,7 +44,7 @@ export default function AboutPage() {
   return (
     <div>
       {/* PAGE HEADER */}
-      <section className="bg-primary py-10 md:py-16">
+      <section className="-mt-20 bg-primary pt-[7.5rem] pb-10 md:pt-[9rem] md:pb-16">
         <div className="mx-auto max-w-6xl px-6">
           <h1 className="font-heading text-3xl text-primary-foreground sm:text-4xl md:text-5xl">
             About Us

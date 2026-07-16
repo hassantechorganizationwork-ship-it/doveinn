@@ -25,26 +25,25 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Every page starts with a transparent navbar sitting on top of that
+  // page's own dark header block, so there's no visible seam — it only
+  // turns solid once you scroll past that block.
   useEffect(() => {
-    if (!isHome) return;
     const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isHome]);
+  }, [pathname]);
 
   // Close the mobile menu whenever the route actually changes.
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
-  // Transparent-over-hero only applies on the home page; every other page
-  // keeps a solid navbar since it has no full-bleed dark hero to sit on.
-  const solid = !isHome || scrolled;
+  const solid = scrolled;
 
   return (
     <header
