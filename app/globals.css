@@ -135,4 +135,7 @@
   button {
     touch-action: manipulation;
   }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
 }

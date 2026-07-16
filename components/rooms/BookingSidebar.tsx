@@ -22,6 +22,7 @@ export function BookingSidebar({ room }: { room: Room }) {
   const router = useRouter();
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  const [dateError, setDateError] = useState("");
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -37,9 +38,14 @@ export function BookingSidebar({ room }: { room: Room }) {
 
   const handleBookNow = () => {
     if (!checkIn || !checkOut) {
-      alert("Please select check-in and check-out dates");
+      setDateError("Please select both check-in and check-out dates.");
       return;
     }
+    if (nights <= 0) {
+      setDateError("Check-out date must be after the check-in date.");
+      return;
+    }
+    setDateError("");
     router.push(`/booking?room=${room.slug}&checkin=${checkIn}&checkout=${checkOut}`);
   };
 
@@ -61,7 +67,11 @@ export function BookingSidebar({ room }: { room: Room }) {
               type="date"
               min={today}
               value={checkIn}
-              onChange={(e) => setCheckIn(e.target.value)}
+              onChange={(e) => {
+                setCheckIn(e.target.value);
+                setDateError("");
+              }}
+              className="cursor-pointer"
             />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -71,10 +81,20 @@ export function BookingSidebar({ room }: { room: Room }) {
               type="date"
               min={checkIn || today}
               value={checkOut}
-              onChange={(e) => setCheckOut(e.target.value)}
+              onChange={(e) => {
+                setCheckOut(e.target.value);
+                setDateError("");
+              }}
+              className="cursor-pointer"
             />
           </div>
         </div>
+
+        {dateError && (
+          <p className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {dateError}
+          </p>
+        )}
 
         {showSummary && (
           <div className="mt-6 space-y-2 rounded-lg bg-muted/50 p-4 text-sm">
