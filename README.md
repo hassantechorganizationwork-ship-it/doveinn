@@ -111,6 +111,7 @@ Defined in `app/globals.css` as CSS custom properties (Tailwind v4's CSS-first c
 - **`BookingsTable` / `BookingDetail` / `StatusBadge`** — portal booking-management UI, including live Confirm/Reject actions against the API.
 - **`Skeleton` / `RoomCardSkeleton` / `BookingRowSkeleton` / `Spinner`** — loading states used in `loading.tsx` route files and in-flight button states.
 - **`components/ui/*`** — shadcn/ui primitives (Button, Card, Badge, Input, Label, Sheet, Textarea, Separator) that everything else is built from.
+- **Currency Converter** (`/currency`) — fetches live PKR exchange rates from the free [open.er-api.com](https://www.exchangerate-api.com/docs/free) API (no key required), with a real-time search/filter over the currency list and a live PKR-amount converter so guests can check room prices in their own currency.
 
 ## Responsive Behavior
 
