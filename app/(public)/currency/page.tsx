@@ -365,6 +365,18 @@ export default function CurrencyPage() {
             )}
           </>
         )}
+
+        <p className="mt-12 text-center text-xs text-muted-foreground">
+          Exchange rate data provided by{" "}
+          <a
+            href="https://www.exchangerate-api.com/docs/free"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-gold"
+          >
+            open.er-api.com
+          </a>
+        </p>
       </section>
     </div>
   );
