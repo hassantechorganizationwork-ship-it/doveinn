@@ -12,12 +12,12 @@ export const metadata: Metadata = {
 
 const WHATSAPP_NUMBER = "923003901181";
 const MAP_EMBED_SRC =
-  "https://www.google.com/maps?q=31.4514767,74.2707378&z=17&output=embed";
-// cid = Soft Inn Hotel's exact Google Place ID (converted from hex to decimal) —
-// opens the real, labeled listing at the precise verified location.
-const MAP_LINK = "https://www.google.com/maps?cid=10597146064902662880";
+  "https://www.google.com/maps?q=31.4697113,74.1066358&z=17&output=embed";
+// cid = the exact Google Place ID for this location (converted from hex to
+// decimal) — opens the real, labeled listing at the precise verified spot.
+const MAP_LINK = "https://www.google.com/maps?cid=2456864815145587544";
 const MAP_DIRECTIONS_LINK =
-  "https://www.google.com/maps/dir/?api=1&destination=31.4514767,74.2707378";
+  "https://www.google.com/maps/dir/?api=1&destination=31.4697113,74.1066358";
 
 export default function ContactPage() {
   return (
