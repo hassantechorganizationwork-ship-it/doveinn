@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import currencyCodes from "currency-codes";
+import { format } from "date-fns";
 import { RefreshCw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,43 +17,118 @@ const BASE_CURRENCY = "PKR";
 // and it does carry PKR.
 const RATES_URL = `https://open.er-api.com/v6/latest/${BASE_CURRENCY}`;
 
-// The API only returns ISO codes — map the common ones to a readable name
-// so the list is scannable without guessing what "AED" means.
-const CURRENCY_NAMES: Record<string, string> = {
-  USD: "US Dollar",
-  EUR: "Euro",
-  GBP: "British Pound",
-  AED: "UAE Dirham",
-  SAR: "Saudi Riyal",
-  AUD: "Australian Dollar",
-  CAD: "Canadian Dollar",
+// A handful of pseudo-/retired-currency codes that open.er-api.com returns
+// but the ISO 4217 `currency-codes` package doesn't recognize — regional
+// currencies that peg to another territory's currency, or superseded codes.
+// Also covers cases where the package's official ISO short name omits the
+// country (e.g. "Lek" instead of "Albanian Lek"), for a more scannable card.
+const NAME_OVERRIDES: Record<string, string> = {
+  AFN: "Afghan Afghani",
+  ALL: "Albanian Lek",
+  AOA: "Angolan Kwanza",
+  AZN: "Azerbaijani Manat",
+  BAM: "Bosnia-Herzegovina Convertible Mark",
+  BDT: "Bangladeshi Taka",
+  BOB: "Bolivian Boliviano",
+  BTN: "Bhutanese Ngultrum",
+  BWP: "Botswana Pula",
+  CLF: "Chilean Unit of Account (UF)",
+  CNH: "Offshore Chinese Yuan",
   CNY: "Chinese Yuan",
-  JPY: "Japanese Yen",
-  INR: "Indian Rupee",
-  CHF: "Swiss Franc",
-  SEK: "Swedish Krona",
-  NOK: "Norwegian Krone",
-  NZD: "New Zealand Dollar",
-  SGD: "Singapore Dollar",
-  HKD: "Hong Kong Dollar",
-  THB: "Thai Baht",
-  TRY: "Turkish Lira",
-  ZAR: "South African Rand",
-  MYR: "Malaysian Ringgit",
-  IDR: "Indonesian Rupiah",
-  KRW: "South Korean Won",
-  BRL: "Brazilian Real",
-  MXN: "Mexican Peso",
-  DKK: "Danish Krone",
-  PLN: "Polish Zloty",
-  CZK: "Czech Koruna",
+  ERN: "Eritrean Nakfa",
+  FOK: "Faroese Króna",
+  GBP: "British Pound Sterling",
+  GEL: "Georgian Lari",
+  GGP: "Guernsey Pound",
+  GMD: "Gambian Dalasi",
+  GTQ: "Guatemalan Quetzal",
+  HNL: "Honduran Lempira",
+  HRK: "Croatian Kuna (retired)",
+  HTG: "Haitian Gourde",
   HUF: "Hungarian Forint",
-  ILS: "Israeli Shekel",
-  PHP: "Philippine Peso",
-  BGN: "Bulgarian Lev",
-  RON: "Romanian Leu",
-  ISK: "Icelandic Krona",
+  ILS: "Israeli New Shekel",
+  IMP: "Isle of Man Pound",
+  ISK: "Icelandic Króna",
+  JEP: "Jersey Pound",
+  JPY: "Japanese Yen",
+  KGS: "Kyrgyzstani Som",
+  KHR: "Cambodian Riel",
+  KID: "Kiribati Dollar",
+  KMF: "Comorian Franc",
+  KRW: "South Korean Won",
+  KZT: "Kazakhstani Tenge",
+  LSL: "Lesotho Loti",
+  MKD: "Macedonian Denar",
+  MMK: "Myanmar Kyat",
+  MNT: "Mongolian Tugrik",
+  MOP: "Macanese Pataca",
+  MRU: "Mauritanian Ouguiya",
+  MVR: "Maldivian Rufiyaa",
+  NGN: "Nigerian Naira",
+  NIO: "Nicaraguan Córdoba",
+  OMR: "Omani Rial",
+  PAB: "Panamanian Balboa",
+  PEN: "Peruvian Sol",
+  PGK: "Papua New Guinean Kina",
+  PLN: "Polish Zloty",
+  PYG: "Paraguayan Guarani",
+  SLE: "Sierra Leonean Leone",
+  SLL: "Sierra Leonean Leone (old)",
+  STN: "São Tomé & Príncipe Dobra",
+  SZL: "Swazi Lilangeni",
+  THB: "Thai Baht",
+  TJS: "Tajikistani Somoni",
+  TOP: "Tongan Paʻanga",
+  TVD: "Tuvaluan Dollar",
+  UAH: "Ukrainian Hryvnia",
+  VES: "Venezuelan Bolívar",
+  VND: "Vietnamese Dong",
+  WST: "Samoan Tala",
+  XCG: "Caribbean Guilder",
+  ZAR: "South African Rand",
+  ZWL: "Zimbabwean Dollar (old)",
 };
+
+function currencyName(code: string): string {
+  if (NAME_OVERRIDES[code]) return NAME_OVERRIDES[code];
+  return currencyCodes.code(code)?.currency ?? code;
+}
+
+// Smaller, hand-picked list of search aliases for the currencies most
+// relevant to Pakistani hotel guests (Gulf states, US/UK/EU, nearby Asia).
+// Doesn't need to cover all 160+ codes — just common nicknames people
+// actually type, on top of the code/name match every currency already gets.
+const SEARCH_ALIASES: Record<string, string[]> = {
+  USD: ["usd", "dollar", "us dollar", "usa", "america", "united states"],
+  GBP: ["gbp", "pound", "british pound", "sterling", "uk", "britain", "england"],
+  EUR: ["eur", "euro", "europe", "eurozone"],
+  SAR: ["sar", "riyal", "saudi riyal", "saudi arabia", "ksa", "saudi"],
+  AED: ["aed", "dirham", "uae", "emirates", "dubai", "abu dhabi"],
+  QAR: ["qar", "riyal", "qatari riyal", "qatar", "doha"],
+  KWD: ["kwd", "dinar", "kuwaiti dinar", "kuwait"],
+  OMR: ["omr", "rial", "omani rial", "oman", "muscat"],
+  BHD: ["bhd", "dinar", "bahraini dinar", "bahrain", "manama"],
+  CNY: ["cny", "yuan", "chinese yuan", "china", "renminbi", "rmb"],
+  JPY: ["jpy", "yen", "japanese yen", "japan"],
+  CAD: ["cad", "canadian dollar", "canada"],
+  AUD: ["aud", "australian dollar", "australia"],
+  CHF: ["chf", "swiss franc", "switzerland"],
+  TRY: ["try", "lira", "turkish lira", "turkey"],
+  MYR: ["myr", "ringgit", "malaysian ringgit", "malaysia"],
+  THB: ["thb", "baht", "thai baht", "thailand"],
+  SGD: ["sgd", "singapore dollar", "singapore"],
+  HKD: ["hkd", "hong kong dollar", "hong kong"],
+  INR: ["inr", "rupee", "indian rupee", "india"],
+  NZD: ["nzd", "new zealand dollar", "new zealand"],
+};
+
+function matchesSearch(code: string, name: string, query: string): boolean {
+  if (code.toLowerCase().includes(query)) return true;
+  if (name.toLowerCase().includes(query)) return true;
+  const aliases = SEARCH_ALIASES[code];
+  if (!aliases) return false;
+  return aliases.some((alias) => alias.includes(query));
+}
 
 type RatesResponse = {
   result: "success" | "error";
@@ -59,6 +136,37 @@ type RatesResponse = {
   time_last_update_utc: string;
   rates: Record<string, number>;
 };
+
+// The API's timestamp is UTC (e.g. "Sun, 19 Jul 2026 00:02:31 +0000"). Pakistan
+// Standard Time is a fixed UTC+5 offset with no DST, so we resolve it via the
+// IANA "Asia/Karachi" zone (correct by definition, not a hardcoded +5) and
+// hand the resolved wall-clock fields to date-fns for the actual formatting.
+function formatPktTimestamp(utcString: string): string {
+  const utcDate = new Date(utcString);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Karachi",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(utcDate);
+
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? 0);
+  // Construct a Date whose LOCAL getters equal the PKT wall-clock time, so
+  // date-fns' format() (which reads local getters) prints the right value
+  // regardless of the viewer's own browser timezone.
+  const pktAsLocal = new Date(
+    get("year"),
+    get("month") - 1,
+    get("day"),
+    get("hour"),
+    get("minute")
+  );
+
+  return `${format(pktAsLocal, "d MMM yyyy, h:mm a")} (PKT)`;
+}
 
 export default function CurrencyPage() {
   const [rates, setRates] = useState<Record<string, number> | null>(null);
@@ -100,8 +208,7 @@ export default function CurrencyPage() {
     return Object.entries(rates)
       .filter(([code]) => {
         if (!query) return true;
-        const name = CURRENCY_NAMES[code]?.toLowerCase() ?? "";
-        return code.toLowerCase().includes(query) || name.includes(query);
+        return matchesSearch(code, currencyName(code), query);
       })
       .sort(([a], [b]) => a.localeCompare(b));
   }, [rates, search]);
@@ -138,7 +245,7 @@ export default function CurrencyPage() {
               <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="currency-search"
-                placeholder="e.g. USD or Dollar"
+                placeholder="e.g. USD, dollar, dirham, riyal"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-8"
@@ -162,7 +269,7 @@ export default function CurrencyPage() {
 
         {asOfDate && !loading && !error && (
           <p className="mt-4 text-xs text-muted-foreground">
-            Rates as of {asOfDate}, base currency PKR.
+            Rates last updated: {formatPktTimestamp(asOfDate)}
           </p>
         )}
 
@@ -214,7 +321,7 @@ export default function CurrencyPage() {
                           {code}
                         </h3>
                         <span className="text-xs text-muted-foreground">
-                          {CURRENCY_NAMES[code] ?? "Currency"}
+                          {currencyName(code)}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground">
