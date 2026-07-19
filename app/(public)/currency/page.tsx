@@ -199,6 +199,17 @@ export default function CurrencyPage() {
     fetchRates();
   }, [fetchRates]);
 
+  // Dev-only: forces the same error state a real fetch failure produces, so
+  // it can be triggered on demand for a demo recording without needing to
+  // fake a network failure. `NODE_ENV === "development"` is inlined at build
+  // time, so this whole branch (and the button below) is dead code that gets
+  // stripped out of the production bundle — it never ships.
+  const simulateError = useCallback(() => {
+    setLoading(false);
+    setError(true);
+    setRates(null);
+  }, []);
+
   const parsedAmount = Number(amount);
   const validAmount = amount !== "" && !Number.isNaN(parsedAmount) && parsedAmount >= 0;
 
@@ -266,6 +277,18 @@ export default function CurrencyPage() {
             />
           </div>
         </div>
+
+        {process.env.NODE_ENV === "development" && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={simulateError}
+            className="mt-4 border-destructive text-destructive hover:bg-destructive/10"
+          >
+            Simulate API failure (dev only)
+          </Button>
+        )}
 
         {asOfDate && !loading && !error && (
           <p className="mt-4 text-xs text-muted-foreground">
