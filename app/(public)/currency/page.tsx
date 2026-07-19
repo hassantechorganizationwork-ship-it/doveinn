@@ -245,7 +245,7 @@ export default function CurrencyPage() {
               <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="currency-search"
-                placeholder="e.g. USD, dollar, dirham, riyal"
+                placeholder="e.g. USD, dollar, america"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-8"
