@@ -215,15 +215,15 @@ export default async function Home() {
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-6 text-center text-sm text-primary-foreground/80 sm:grid-cols-3">
           <div className="flex items-center justify-center gap-2">
             <Phone className="size-4 text-gold" />
-            <span>+92 300 3901181</span>
+            <span>+92 300 3901181 / 0324 0041300</span>
           </div>
           <div className="flex items-center justify-center gap-2">
             <Mail className="size-4 text-gold" />
-            <span>info@doveinn.pk</span>
+            <span>hassanshafiq03240041300@gmail.com</span>
           </div>
           <div className="flex items-center justify-center gap-2">
             <MapPin className="size-4 text-gold" />
-            <span>R1 Block, Johar Town, Lahore, 54600</span>
+            <span>Sharaqpur Taiba Colony, Hazrat Ali Street</span>
           </div>
         </div>
       </section>

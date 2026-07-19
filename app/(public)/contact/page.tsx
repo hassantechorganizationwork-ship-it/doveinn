@@ -49,7 +49,9 @@ export default function ContactPage() {
             <div className="mt-8 flex flex-col gap-5">
               <div className="flex items-center gap-3">
                 <Phone className="size-5 shrink-0 text-gold" />
-                <span className="text-primary">+92 300 3901181</span>
+                <span className="text-primary">
+                  +92 300 3901181 / 0324 0041300
+                </span>
               </div>
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
@@ -62,13 +64,14 @@ export default function ContactPage() {
               </a>
               <div className="flex items-center gap-3">
                 <Mail className="size-5 shrink-0 text-gold" />
-                <span className="text-primary">info@doveinn.pk</span>
+                <span className="text-primary">
+                  hassanshafiq03240041300@gmail.com
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="size-5 shrink-0 text-gold" />
                 <span className="text-primary">
-                  R1 Block, Johar Town R1, Block R 1 Phase 2 Johar Town,
-                  Lahore, 54600, Pakistan
+                  Sharaqpur Taiba Colony, Hazrat Ali Street, Pakistan
                 </span>
               </div>
               <div className="flex items-center gap-3">

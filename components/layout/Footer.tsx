@@ -45,12 +45,9 @@ export function Footer() {
               Contact
             </h4>
             <ul className="mt-4 space-y-3 text-sm text-primary-foreground/70">
-              <li>+92 300 3901181</li>
-              <li>info@doveinn.pk</li>
-              <li>
-                R1 Block, Johar Town R1, Block R 1 Phase 2 Johar Town,
-                Lahore, 54600, Pakistan
-              </li>
+              <li>+92 300 3901181 / 0324 0041300</li>
+              <li>hassanshafiq03240041300@gmail.com</li>
+              <li>Sharaqpur Taiba Colony, Hazrat Ali Street, Pakistan</li>
             </ul>
           </div>
         </div>
