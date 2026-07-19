@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Get in touch with Dove Inn Hotel. Call us, WhatsApp us, or fill out our contact form. We respond within 24 hours.",
 };
 
-const WHATSAPP_NUMBER = "923003901181";
+const WHATSAPP_NUMBER = "923240041300";
 const MAP_EMBED_SRC =
   "https://www.google.com/maps?q=31.4697113,74.1066358&z=17&output=embed";
 // cid = the exact Google Place ID for this location (converted from hex to
@@ -49,9 +49,7 @@ export default function ContactPage() {
             <div className="mt-8 flex flex-col gap-5">
               <div className="flex items-center gap-3">
                 <Phone className="size-5 shrink-0 text-gold" />
-                <span className="text-primary">
-                  +92 300 3901181 / 0324 0041300
-                </span>
+                <span className="text-primary">+92 324 0041300</span>
               </div>
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
@@ -60,7 +58,7 @@ export default function ContactPage() {
                 className="flex items-center gap-3 hover:text-gold"
               >
                 <MessageCircle className="size-5 shrink-0 text-gold" />
-                <span className="text-primary">WhatsApp: +92 300 3901181</span>
+                <span className="text-primary">WhatsApp: +92 324 0041300</span>
               </a>
               <div className="flex items-center gap-3">
                 <Mail className="size-5 shrink-0 text-gold" />
@@ -71,7 +69,8 @@ export default function ContactPage() {
               <div className="flex items-center gap-3">
                 <MapPin className="size-5 shrink-0 text-gold" />
                 <span className="text-primary">
-                  Sharaqpur Taiba Colony, Hazrat Ali Street, Pakistan
+                  Taiba Colony, Hazrat Ali Street, Dove Inn Hotel, Sharaqpur
+                  Sharif
                 </span>
               </div>
               <div className="flex items-center gap-3">

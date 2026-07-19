@@ -215,7 +215,7 @@ export default async function Home() {
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-6 text-center text-sm text-primary-foreground/80 sm:grid-cols-3">
           <div className="flex items-center justify-center gap-2">
             <Phone className="size-4 text-gold" />
-            <span>+92 300 3901181 / 0324 0041300</span>
+            <span>+92 324 0041300</span>
           </div>
           <div className="flex items-center justify-center gap-2">
             <Mail className="size-4 text-gold" />
@@ -223,7 +223,7 @@ export default async function Home() {
           </div>
           <div className="flex items-center justify-center gap-2">
             <MapPin className="size-4 text-gold" />
-            <span>Sharaqpur Taiba Colony, Hazrat Ali Street</span>
+            <span>Taiba Colony, Hazrat Ali Street, Dove Inn Hotel, Sharaqpur Sharif</span>
           </div>
         </div>
       </section>

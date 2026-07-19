@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import type { Room } from "@/components/rooms/RoomCard";
 
-const WHATSAPP_NUMBER = "923003901181";
+const WHATSAPP_NUMBER = "923240041300";
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (

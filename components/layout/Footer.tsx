@@ -45,9 +45,12 @@ export function Footer() {
               Contact
             </h4>
             <ul className="mt-4 space-y-3 text-sm text-primary-foreground/70">
-              <li>+92 300 3901181 / 0324 0041300</li>
+              <li>+92 324 0041300</li>
               <li>hassanshafiq03240041300@gmail.com</li>
-              <li>Sharaqpur Taiba Colony, Hazrat Ali Street, Pakistan</li>
+              <li>
+                Taiba Colony, Hazrat Ali Street, Dove Inn Hotel, Sharaqpur
+                Sharif
+              </li>
             </ul>
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-const WHATSAPP_NUMBER = "923003901181";
+const WHATSAPP_NUMBER = "923240041300";
 const WHATSAPP_MESSAGE = "Hi, I want to inquire about a room booking";
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {

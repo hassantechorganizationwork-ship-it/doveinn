@@ -7,7 +7,7 @@ import { CircleCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
-const WHATSAPP_NUMBER = "923003901181";
+const WHATSAPP_NUMBER = "923240041300";
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
