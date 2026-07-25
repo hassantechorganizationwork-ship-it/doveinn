@@ -1,14 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  BadgeCheck,
-  BedDouble,
-  Clock,
-  MapPin,
-  Phone,
-  Mail,
-  Wifi,
-} from "lucide-react";
+import { BedDouble, MapPin, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,28 +28,10 @@ const ROOM_TYPES = [
   },
 ];
 
-const FEATURES = [
-  {
-    icon: Wifi,
-    title: "Free WiFi",
-    description: "Stay connected with high-speed internet throughout.",
-  },
-  {
-    icon: Clock,
-    title: "24/7 Reception",
-    description: "Our front desk is here for you around the clock.",
-  },
-  {
-    icon: MapPin,
-    title: "Prime Location",
-    description: "Steps away from the city's best attractions.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "Best Rates",
-    description: "Quality comfort at prices that make sense.",
-  },
-];
+// Revalidate this page in the background at most once a minute, so
+// amenities added/edited/removed through the portal show up on the live
+// site without needing a full redeploy.
+export const revalidate = 60;
 
 export default async function Home() {
   const rooms = await getRooms();
@@ -196,31 +170,6 @@ export default async function Home() {
           </div>
         </section>
       )}
-
-      {/* WHY CHOOSE US SECTION */}
-      <section className="bg-background py-12 md:py-20 lg:py-28">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
-            Why Choose Dove Inn?
-          </h2>
-
-          <div className="mt-12 grid grid-cols-2 gap-8 md:grid-cols-4">
-            {FEATURES.map((feature) => (
-              <div key={feature.title} className="flex flex-col items-center text-center">
-                <div className="flex size-16 items-center justify-center rounded-full bg-gold/10">
-                  <feature.icon className="size-8 text-gold" />
-                </div>
-                <h3 className="mt-4 font-semibold text-primary">
-                  {feature.title}
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA BANNER SECTION */}
       <section className="bg-primary py-12 md:py-20 lg:py-28">
