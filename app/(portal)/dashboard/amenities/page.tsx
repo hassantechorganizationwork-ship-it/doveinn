@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Amenity } from "@/lib/supabase/amenities";
 
 type Toast = { type: "success" | "error"; text: string };
@@ -243,9 +244,35 @@ export default function AmenitiesPage() {
       {/* LIST */}
       <div className="mt-6 rounded-xl bg-white p-6 shadow-sm">
         {listLoading && (
-          <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
-            <Spinner />
-            Loading amenities...
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-border text-muted-foreground">
+                  <th className="py-2 pr-4 font-medium">Icon</th>
+                  <th className="py-2 pr-4 font-medium">Name</th>
+                  <th className="py-2 pr-4 font-medium">Description</th>
+                  <th className="py-2 pr-4 font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <tr key={i} className="border-b border-border last:border-none">
+                    <td className="py-3 pr-4">
+                      <Skeleton className="h-6 w-6" />
+                    </td>
+                    <td className="py-3 pr-4">
+                      <Skeleton className="h-4 w-24" />
+                    </td>
+                    <td className="py-3 pr-4">
+                      <Skeleton className="h-4 w-48" />
+                    </td>
+                    <td className="py-3 pr-4">
+                      <Skeleton className="h-8 w-32" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 

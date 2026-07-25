@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,10 +38,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F5F5F5] px-6">
-      <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-sm">
+    <div className="relative flex min-h-screen items-center justify-center px-6">
+      <Image
+        src="/images/rooms/exterior-1.png"
+        alt="Dove Inn Hotel"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      <div className="absolute inset-0 bg-primary/70" />
+
+      <div className="relative w-full max-w-md rounded-xl bg-white p-10 shadow-lg">
         <div className="text-center">
-          <p className="font-heading text-2xl text-gold">Dove Inn Hotel</p>
+          <p className="font-heading text-3xl text-gold">Dove Inn Hotel</p>
           <h1 className="mt-4 font-heading text-xl text-primary">
             Manager Login
           </h1>

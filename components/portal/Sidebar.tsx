@@ -70,6 +70,7 @@ function SidebarLogo() {
 function LogoutButton() {
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -79,14 +80,40 @@ function LogoutButton() {
     router.refresh();
   };
 
+  if (confirming) {
+    return (
+      <div className="flex flex-col gap-2 px-6 py-5">
+        <p className="text-xs text-primary-foreground/70">
+          Log out of the manager portal?
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="flex cursor-pointer items-center gap-2 rounded-md bg-red-500/10 px-3 py-1.5 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loggingOut && <Spinner />}
+            {loggingOut ? "Logging out..." : "Confirm"}
+          </button>
+          <button
+            onClick={() => setConfirming(false)}
+            disabled={loggingOut}
+            className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-primary-foreground/70 transition-colors hover:text-gold disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <button
-      onClick={handleLogout}
-      disabled={loggingOut}
-      className="flex cursor-pointer items-center gap-3 px-6 py-5 text-sm font-medium text-red-400 transition-colors hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+      onClick={() => setConfirming(true)}
+      className="flex cursor-pointer items-center gap-3 px-6 py-5 text-sm font-medium text-red-400 transition-colors hover:text-red-300"
     >
-      {loggingOut ? <Spinner /> : <LogOut className="size-5" />}
-      {loggingOut ? "Logging out..." : "Logout"}
+      <LogOut className="size-5" />
+      Logout
     </button>
   );
 }
