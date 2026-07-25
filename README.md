@@ -115,6 +115,7 @@ Defined in `app/globals.css` as CSS custom properties (Tailwind v4's CSS-first c
 - **`components/ui/*`** — shadcn/ui primitives (Button, Card, Badge, Input, Label, Sheet, Textarea, Separator) that everything else is built from.
 - **Currency Converter** (`/currency`) — fetches live PKR exchange rates from the free [open.er-api.com](https://www.exchangerate-api.com/docs/free) API (no key required), with a real-time search/filter over the currency list and a live PKR-amount converter so guests can check room prices in their own currency.
 - **Amenities** — full CRUD feature backed by a real `amenities` table (self-built API routes, not a third-party service). Public read access; create/update/delete are restricted to authenticated managers via RLS and an explicit server-side session check in every write route. Managed from `/dashboard/amenities` (create form, inline edit, confirm-before-delete) and surfaced read-only in a "Hotel Amenities" section on the homepage.
+- **Guest Account System** (`/account`) — separate customer-facing auth from the manager portal, also via Supabase Auth. `/account/signup` and `/account/login` handle signup/login with per-field client-side validation; `/account` is a protected "My Bookings" page that fetches the logged-in guest's own bookings (matched by their session email, verified server-side) with loading/error/empty states and a confirm-before-logout step. The manager account is tagged `role: "manager"` in `app_metadata` (settable only by the service role) so a guest signup can never reach `/dashboard`.
 
 ## Responsive Behavior
 
@@ -144,6 +145,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) for the public site, or [http://localhost:3000/login](http://localhost:3000/login) for the manager portal.
+
+> **Note:** Email confirmation for guest signups (`/account/signup`) is currently turned **off** in Supabase (Authentication → Sign In / Providers → Email → "Confirm email") for easier testing — new accounts get a session immediately instead of waiting on a confirmation email. Supabase's default email sender also has a strict rate limit, which is part of why this is off for now. Before real guests use this in production, re-enable email confirmation and connect a proper SMTP provider (e.g. Resend) in Supabase's Auth settings.
 
 ```bash
 # Production build
