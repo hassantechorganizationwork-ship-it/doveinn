@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { RoomCard } from "@/components/rooms/RoomCard";
 import { getRooms } from "@/lib/supabase/rooms";
+import { getAmenities } from "@/lib/supabase/amenities";
 
 const ROOM_TYPES = [
   {
@@ -61,6 +62,7 @@ const FEATURES = [
 export default async function Home() {
   const rooms = await getRooms();
   const featuredRooms = rooms.filter((room) => room.type === "master").slice(0, 3);
+  const amenities = await getAmenities();
 
   return (
     <div>
@@ -162,6 +164,35 @@ export default async function Home() {
                 View All Rooms
               </Button>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* AMENITIES SECTION */}
+      {amenities.length > 0 && (
+        <section className="mx-auto max-w-6xl px-6 py-12 md:py-20 lg:py-28">
+          <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
+            Hotel Amenities
+          </h2>
+
+          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {amenities.map((amenity) => (
+              <Card key={amenity.id} className="border-none shadow-sm">
+                <CardContent className="flex items-start gap-4 p-6">
+                  <span className="text-2xl">{amenity.icon || "✓"}</span>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold text-primary">
+                      {amenity.name}
+                    </h3>
+                    {amenity.description && (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {amenity.description}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
       )}
