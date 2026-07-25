@@ -70,7 +70,12 @@ export default function LoginPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Password</Label>
+              <span className="text-xs text-muted-foreground">
+                (testing: manager123)
+              </span>
+            </div>
             <Input
               id="password"
               type="password"
