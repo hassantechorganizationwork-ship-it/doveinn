@@ -10,6 +10,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { RoomCard } from "@/components/rooms/RoomCard";
+import { AmenityIcon } from "@/components/amenities/AmenityIcon";
 import { getRooms } from "@/lib/supabase/rooms";
 import { getAmenities } from "@/lib/supabase/amenities";
 
@@ -153,7 +154,7 @@ export default async function Home() {
             {amenities.map((amenity) => (
               <Card key={amenity.id} className="border-none shadow-sm">
                 <CardContent className="flex items-start gap-4 p-6">
-                  <span className="text-2xl">{amenity.icon || "✓"}</span>
+                  <AmenityIcon icon={amenity.icon} className="mt-1 shrink-0" />
                   <div>
                     <h3 className="font-heading text-lg font-bold text-primary">
                       {amenity.name}

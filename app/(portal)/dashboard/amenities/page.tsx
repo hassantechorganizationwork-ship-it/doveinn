@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AmenityIcon } from "@/components/amenities/AmenityIcon";
 import type { Amenity } from "@/lib/supabase/amenities";
 
 type Toast = { type: "success" | "error"; text: string };
@@ -331,7 +332,7 @@ export default function AmenitiesPage() {
                             className="h-8 w-20"
                           />
                         ) : (
-                          <span className="text-lg">{amenity.icon || "—"}</span>
+                          <AmenityIcon icon={amenity.icon} />
                         )}
                       </td>
                       <td className="py-3 pr-4 font-medium text-primary">
