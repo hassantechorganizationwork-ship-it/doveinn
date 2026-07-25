@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 async function requireUser() {
@@ -86,6 +87,8 @@ export async function PATCH(
     );
   }
 
+  revalidatePath("/");
+
   return NextResponse.json({ success: true, data });
 }
 
@@ -123,6 +126,8 @@ export async function DELETE(
       { status: 404 }
     );
   }
+
+  revalidatePath("/");
 
   return NextResponse.json({ success: true });
 }
