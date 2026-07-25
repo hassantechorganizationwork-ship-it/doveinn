@@ -118,7 +118,7 @@ export default async function Home() {
 
       {/* FEATURED ROOMS SECTION */}
       {featuredRooms.length > 0 && (
-        <section className="bg-muted/40 py-12 md:py-20 lg:py-28">
+        <section className="bg-muted py-12 md:py-20 lg:py-28">
           <div className="mx-auto max-w-6xl px-6">
             <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
               Featured Rooms
