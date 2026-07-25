@@ -43,14 +43,37 @@ CREATE TABLE room_availability (
   booking_id UUID REFERENCES bookings(id)
 );
 
+-- AMENITIES TABLE
+CREATE TABLE amenities (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  icon TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Enable Row Level Security
 ALTER TABLE rooms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE room_availability ENABLE ROW LEVEL SECURITY;
+ALTER TABLE amenities ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies: rooms are public read
 CREATE POLICY "Rooms are publicly readable"
   ON rooms FOR SELECT USING (true);
+
+-- Amenities: public read, writes restricted to logged-in manager accounts
+CREATE POLICY "Amenities are publicly readable"
+  ON amenities FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can insert amenities"
+  ON amenities FOR INSERT TO authenticated WITH CHECK (true);
+
+CREATE POLICY "Authenticated users can update amenities"
+  ON amenities FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+
+CREATE POLICY "Authenticated users can delete amenities"
+  ON amenities FOR DELETE TO authenticated USING (true);
 
 -- Bookings: anyone can insert (for guest booking)
 CREATE POLICY "Anyone can create a booking"
