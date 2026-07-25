@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -13,6 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -28,6 +29,23 @@ export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountHref, setAccountHref] = useState("/account/login");
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data }) => {
+      setAccountHref(data.user ? "/account" : "/account/login");
+    });
+
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setAccountHref(session?.user ? "/account" : "/account/login");
+      }
+    );
+
+    return () => subscription.subscription.unsubscribe();
+  }, []);
 
   // Every page starts with a transparent navbar sitting on top of that
   // page's own dark header block, so there's no visible seam — it only
@@ -74,6 +92,13 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          <Link
+            href={accountHref}
+            className="flex items-center gap-1.5 text-sm font-medium text-primary-foreground/90 transition-colors hover:text-gold"
+          >
+            <User className="size-4" />
+            My Bookings
+          </Link>
           <WhatsAppButton />
           <Button
             className="bg-gold text-gold-foreground hover:bg-gold/90"
@@ -107,6 +132,14 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href={accountHref}
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 text-base font-medium text-primary"
+              >
+                <User className="size-5" />
+                My Bookings
+              </Link>
               <Button
                 className="mt-4 bg-gold text-gold-foreground hover:bg-gold/90"
                 render={<Link href="/rooms" onClick={() => setMenuOpen(false)} />}
