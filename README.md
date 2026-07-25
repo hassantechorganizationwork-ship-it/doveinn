@@ -56,11 +56,13 @@ doveinn/
 │   │       ├── page.tsx         #     Stats + recent bookings
 │   │       ├── bookings/         #     All bookings, filterable, confirm/reject
 │   │       ├── bookings/[ref]/   #     Single booking detail + manager notes
-│   │       └── rooms/            #     Room price management
+│   │       ├── rooms/            #     Room price management
+│   │       └── amenities/        #     Amenities CRUD (create/edit/delete)
 │   └── api/                    # Serverless API routes
 │       ├── bookings/route.ts    #   POST — create a new booking
 │       ├── bookings/[ref]/route.ts # PATCH — confirm/reject a booking, blocks dates
-│       └── availability/route.ts  # GET — check if a room is free for given dates
+│       ├── availability/route.ts  # GET — check if a room is free for given dates
+│       └── amenities/             # GET/POST (list, create) + [id]/route.ts for PATCH/DELETE
 ├── components/
 │   ├── ui/                    # shadcn/ui primitives (button, card, badge, sheet, skeleton, spinner, etc.)
 │   ├── layout/                # Navbar, Footer, WhatsAppButton
@@ -70,13 +72,13 @@ doveinn/
 │   └── portal/                 # Sidebar, StatusBadge, BookingsTable, BookingDetail, skeletons
 ├── lib/
 │   ├── supabase/               # client.ts (browser), server.ts (cookie-aware), admin.ts (service role),
-│   │                            # public.ts (anon, for static generation), rooms.ts / bookings.ts (queries + types)
+│   │                            # public.ts (anon, for static generation), rooms.ts / bookings.ts / amenities.ts (queries + types)
 │   ├── data/                   # Original hardcoded room/booking fixtures, kept as fallback reference
 │   └── utils.ts                # `cn()` class-merging helper
 ├── public/
 │   └── images/rooms/            # Real hotel photography (rooms, bathrooms, kitchen, exterior)
 └── supabase/
-    └── schema.sql              # Full database schema: rooms, bookings, room_availability tables + RLS policies
+    └── schema.sql              # Full database schema: rooms, bookings, room_availability, amenities tables + RLS policies
 ```
 
 ## Design System
@@ -112,6 +114,7 @@ Defined in `app/globals.css` as CSS custom properties (Tailwind v4's CSS-first c
 - **`Skeleton` / `RoomCardSkeleton` / `BookingRowSkeleton` / `Spinner`** — loading states used in `loading.tsx` route files and in-flight button states.
 - **`components/ui/*`** — shadcn/ui primitives (Button, Card, Badge, Input, Label, Sheet, Textarea, Separator) that everything else is built from.
 - **Currency Converter** (`/currency`) — fetches live PKR exchange rates from the free [open.er-api.com](https://www.exchangerate-api.com/docs/free) API (no key required), with a real-time search/filter over the currency list and a live PKR-amount converter so guests can check room prices in their own currency.
+- **Amenities** — full CRUD feature backed by a real `amenities` table (self-built API routes, not a third-party service). Public read access; create/update/delete are restricted to authenticated managers via RLS and an explicit server-side session check in every write route. Managed from `/dashboard/amenities` (create form, inline edit, confirm-before-delete) and surfaced read-only in a "Hotel Amenities" section on the homepage.
 
 ## Responsive Behavior
 
