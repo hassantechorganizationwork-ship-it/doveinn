@@ -56,6 +56,10 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
     null
   );
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [wasRepeat, setWasRepeat] = useState(false);
+  const [duplicatePrompt, setDuplicatePrompt] = useState<string | null>(null);
+  const [pendingFormData, setPendingFormData] = useState<FormData | null>(null);
 
   const update = (field: keyof FormState, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -137,24 +141,19 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBanner(null);
-    if (!validate()) return;
-
+  const submitReview = async (body: FormData) => {
     setSubmitting(true);
     try {
-      const body = new FormData();
-      body.set("guest_name", formData.guest_name);
-      body.set("guest_email", formData.guest_email);
-      body.set("room_id", formData.room_id);
-      body.set("stay_date", formData.stay_date);
-      body.set("rating", formData.rating);
-      body.set("review_text", formData.review_text);
-      if (photo) body.set("photo", photo);
-
       const res = await fetch("/api/reviews", { method: "POST", body });
       const json = await res.json();
+
+      if (res.status === 409 && json.duplicate) {
+        // Same email has an existing review — ask before creating another,
+        // rather than silently allowing unlimited duplicates.
+        setPendingFormData(body);
+        setDuplicatePrompt(json.error);
+        return;
+      }
 
       if (!res.ok || !json.success) {
         if (json.fieldErrors) {
@@ -167,10 +166,10 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
         return;
       }
 
-      setBanner({
-        type: "success",
-        text: "Thank you! Your review has been submitted.",
-      });
+      setWasRepeat(Boolean(json.isRepeat));
+      setSubmitted(true);
+      setDuplicatePrompt(null);
+      setPendingFormData(null);
       resetForm();
     } catch {
       setBanner({
@@ -182,12 +181,89 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBanner(null);
+    setDuplicatePrompt(null);
+    if (!validate()) return;
+
+    const body = new FormData();
+    body.set("guest_name", formData.guest_name);
+    body.set("guest_email", formData.guest_email);
+    body.set("room_id", formData.room_id);
+    body.set("stay_date", formData.stay_date);
+    body.set("rating", formData.rating);
+    body.set("review_text", formData.review_text);
+    if (photo) body.set("photo", photo);
+
+    await submitReview(body);
+  };
+
+  const confirmDuplicateSubmit = async () => {
+    if (!pendingFormData) return;
+    pendingFormData.set("force", "true");
+    await submitReview(pendingFormData);
+  };
+
+  const cancelDuplicateSubmit = () => {
+    setDuplicatePrompt(null);
+    setPendingFormData(null);
+  };
+
+  if (submitted) {
+    return (
+      <div className="rounded-xl border border-border bg-card p-8 text-center shadow-sm sm:p-12">
+        <p className="text-lg font-medium text-primary">
+          {wasRepeat
+            ? "✅ Thanks again! You've now submitted multiple reviews."
+            : "✅ Thank you! Your review has been submitted."}
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          We appreciate you taking the time to share your experience.
+        </p>
+        <Button
+          className="mt-6 bg-gold text-gold-foreground hover:bg-gold/90"
+          onClick={() => setSubmitted(false)}
+        >
+          Write Another Review
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
       className="rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8"
     >
-      {banner && (
+      {duplicatePrompt && (
+        <div className="mb-6 flex flex-col gap-3 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <p className="font-medium">{duplicatePrompt}</p>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              size="sm"
+              disabled={submitting}
+              onClick={confirmDuplicateSubmit}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {submitting && <Spinner />}
+              {submitting ? "Submitting..." : "Yes, submit anyway"}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={submitting}
+              onClick={cancelDuplicateSubmit}
+            >
+              No, cancel
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {!duplicatePrompt && banner && (
         <div
           className={
             "mb-6 rounded-lg px-4 py-3 text-sm font-medium " +

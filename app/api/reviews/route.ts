@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
   const ratingRaw = String(form.get("rating") ?? "").trim();
   const reviewText = String(form.get("review_text") ?? "").trim();
   const photo = form.get("photo");
+  const force = String(form.get("force") ?? "") === "true";
 
   const supabase = createAdminClient();
   const fieldErrors: FieldErrors = {};
@@ -95,6 +96,28 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // --- Ask for confirmation before letting the same email submit more than
+  // one review, instead of silently allowing unlimited duplicates. ---
+
+  const { count: existingCount } = await supabase
+    .from("reviews")
+    .select("id", { count: "exact", head: true })
+    .eq("guest_email", guestEmail);
+
+  const isRepeat = (existingCount ?? 0) > 0;
+
+  if (isRepeat && !force) {
+    return NextResponse.json(
+      {
+        success: false,
+        duplicate: true,
+        error:
+          "You've already submitted a review with this email address. Submit another one anyway?",
+      },
+      { status: 409 }
+    );
+  }
+
   // --- Upload photo (if any), then insert the review. ---
 
   let photoUrl: string | null = null;
@@ -141,5 +164,5 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  return NextResponse.json({ success: true, data }, { status: 201 });
+  return NextResponse.json({ success: true, data, isRepeat }, { status: 201 });
 }
