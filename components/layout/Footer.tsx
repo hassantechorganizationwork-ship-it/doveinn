@@ -58,9 +58,17 @@ export function Footer() {
 
         <Separator className="my-10 bg-primary-foreground/10" />
 
-        <p className="text-center text-xs text-primary-foreground/50">
-          © {new Date().getFullYear()} Dove Inn Hotel. All rights reserved.
-        </p>
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-center text-xs text-primary-foreground/50">
+            © {new Date().getFullYear()} Dove Inn Hotel. All rights reserved.
+          </p>
+          <Link
+            href="/login"
+            className="text-xs text-primary-foreground/40 underline-offset-2 transition-colors hover:text-gold hover:underline"
+          >
+            Manager Login
+          </Link>
+        </div>
       </div>
     </footer>
   );
