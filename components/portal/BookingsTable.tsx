@@ -10,7 +10,7 @@ import { StatusBadge } from "@/components/portal/StatusBadge";
 import { cn } from "@/lib/utils";
 import type { BookingStatus, BookingWithRoom } from "@/lib/supabase/bookings";
 
-const FILTERS = ["All", "Pending", "Confirmed", "Rejected", "Cancelled"] as const;
+const FILTERS = ["All", "Pending", "Confirmed", "Rejected", "Cancelled", "Checked Out"] as const;
 type Filter = (typeof FILTERS)[number];
 
 const FILTER_STATUS: Record<Filter, BookingStatus | "all"> = {
@@ -19,6 +19,7 @@ const FILTER_STATUS: Record<Filter, BookingStatus | "all"> = {
   Confirmed: "confirmed",
   Rejected: "rejected",
   Cancelled: "cancelled",
+  "Checked Out": "checked_out",
 };
 
 export function BookingsTable({ bookings }: { bookings: BookingWithRoom[] }) {

@@ -130,7 +130,7 @@ export default async function DashboardPage() {
           </h2>
           <Link
             href="/dashboard/bookings"
-            className="text-sm font-medium text-gold hover:underline"
+            className="text-sm font-medium text-gold-text hover:underline"
           >
             View All
           </Link>

@@ -20,8 +20,8 @@ export function RoomCardSkeleton() {
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full sm:flex-1" />
+          <Skeleton className="h-8 w-full sm:flex-1" />
         </div>
       </CardContent>
     </Card>

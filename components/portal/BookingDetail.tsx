@@ -247,7 +247,7 @@ export function BookingDetail({ booking }: { booking: BookingWithRoom }) {
           <div className="mt-4 flex flex-col gap-3 sm:flex-row">
             <Button
               size="lg"
-              className="w-full bg-green-600 text-white hover:bg-green-700"
+              className="w-full sm:w-auto sm:flex-1 bg-green-600 text-white hover:bg-green-700"
               onClick={handleConfirm}
               disabled={loadingAction !== null}
             >
@@ -256,7 +256,7 @@ export function BookingDetail({ booking }: { booking: BookingWithRoom }) {
             </Button>
             <Button
               size="lg"
-              className="w-full bg-red-600 text-white hover:bg-red-700"
+              className="w-full sm:w-auto sm:flex-1 bg-red-600 text-white hover:bg-red-700"
               onClick={handleReject}
               disabled={loadingAction !== null}
             >

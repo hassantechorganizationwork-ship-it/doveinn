@@ -390,7 +390,7 @@ function BookingFlow() {
                 <span className="text-muted-foreground">
                   Advance to Pay (30%)
                 </span>
-                <span className="font-bold text-gold">
+                <span className="font-bold text-gold-text">
                   Rs {advance.toLocaleString()}
                 </span>
               </div>
@@ -447,7 +447,7 @@ function BookingFlow() {
           <h2 className="font-heading text-2xl text-primary">
             Pay Advance Amount
           </h2>
-          <p className="mt-2 font-heading text-4xl text-gold">
+          <p className="mt-2 font-heading text-4xl text-gold-text">
             Rs {advance.toLocaleString()}
           </p>
 

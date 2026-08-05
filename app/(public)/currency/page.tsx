@@ -350,7 +350,7 @@ export default function CurrencyPage() {
                       <p className="text-sm text-muted-foreground">
                         1 PKR = {rate.toFixed(4)} {code}
                       </p>
-                      <p className="font-semibold text-gold">
+                      <p className="font-semibold text-gold-text">
                         {validAmount
                           ? `${amount} PKR ≈ ${(parsedAmount * rate).toLocaleString(
                               undefined,

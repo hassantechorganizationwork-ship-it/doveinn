@@ -87,7 +87,7 @@ function ConfirmationContent() {
           </div>
           <div className="mt-3 flex justify-between border-t border-border pt-3 text-sm">
             <span className="text-muted-foreground">Amount to Send</span>
-            <span className="font-bold text-gold">
+            <span className="font-bold text-gold-text">
               Rs {advance.toLocaleString()}
             </span>
           </div>

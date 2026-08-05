@@ -64,7 +64,7 @@ export function Footer() {
           </p>
           <Link
             href="/login"
-            className="text-xs text-primary-foreground/40 underline-offset-2 transition-colors hover:text-gold hover:underline"
+            className="text-xs text-primary-foreground/65 underline-offset-2 transition-colors hover:text-gold hover:underline"
           >
             Manager Login
           </Link>

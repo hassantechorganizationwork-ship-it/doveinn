@@ -9,6 +9,7 @@
   --color-foreground: var(--foreground);
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
+  --color-gold-text: var(--gold-text);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-playfair);
@@ -62,11 +63,18 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: #1C1C1C;
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  /* Was 0.556 — measured at only 4.34:1 against --muted (needs 4.5:1 for
+     WCAG AA body text); darkened slightly to comfortably clear it. */
+  --muted-foreground: oklch(0.46 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: #1C1C1C;
   --gold: #C9A84C;
   --gold-foreground: #1C1C1C;
+  /* Same brand gold, darkened for use as *text* on light backgrounds —
+     #C9A84C only has a 2.18:1 contrast ratio against #FAFAF8 (WCAG AA
+     needs 4.5:1 for body text). Gold text on dark backgrounds (Navbar,
+     Footer, Sidebar) already passes fine and is untouched. */
+  --gold-text: #8A6D1F;
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);

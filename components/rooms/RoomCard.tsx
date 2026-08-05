@@ -57,7 +57,7 @@ export function RoomCard({ room }: { room: Room }) {
           <h3 className="font-heading text-lg font-bold text-primary">
             {room.name}
           </h3>
-          <p className="mt-1 font-semibold text-gold">
+          <p className="mt-1 font-semibold text-gold-text">
             Rs {room.price.toLocaleString()} / night
           </p>
           <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
@@ -87,14 +87,14 @@ export function RoomCard({ room }: { room: Room }) {
             variant="outline"
             disabled={navigating}
             onClick={() => setNavigating(true)}
-            className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            className="w-full sm:w-auto sm:flex-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             render={<Link href={`/rooms/${room.slug}`} />}
           >
             {navigating && <Spinner />}
             {navigating ? "Loading..." : "View Details"}
           </Button>
           <Button
-            className="w-full bg-gold text-gold-foreground hover:bg-gold/90"
+            className="w-full sm:w-auto sm:flex-1 bg-gold text-gold-foreground hover:bg-gold/90"
             render={<Link href={`/booking?room=${room.slug}`} />}
           >
             Book Now

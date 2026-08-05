@@ -53,7 +53,7 @@ export function BookingSidebar({ room }: { room: Room }) {
     <div className="lg:sticky lg:top-24">
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="flex items-baseline gap-2">
-          <span className="font-heading text-3xl text-gold">
+          <span className="font-heading text-3xl text-gold-text">
             Rs {room.price.toLocaleString()}
           </span>
           <span className="text-sm text-muted-foreground">per night</span>
@@ -110,7 +110,7 @@ export function BookingSidebar({ room }: { room: Room }) {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Advance to Pay (30%)</span>
-              <span className="font-medium text-gold">
+              <span className="font-medium text-gold-text">
                 Rs {advance.toLocaleString()}
               </span>
             </div>
