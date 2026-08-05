@@ -315,17 +315,22 @@ export default function AnalyticsPage() {
               </h2>
               <div className="mt-4 h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={roomData} layout="vertical" margin={{ left: 24 }}>
+                  <BarChart
+                    data={roomData}
+                    layout="vertical"
+                    margin={{ left: 8, right: 16 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
                     <XAxis type="number" tick={{ fontSize: 12 }} allowDecimals={false} />
                     <YAxis
                       type="category"
                       dataKey="name"
-                      tick={{ fontSize: 12 }}
-                      width={110}
+                      tick={{ fontSize: 11 }}
+                      width={130}
+                      interval={0}
                     />
                     <Tooltip />
-                    <Bar dataKey="bookings" fill="#C9A84C" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="bookings" fill="#C9A84C" radius={[0, 4, 4, 0]} barSize={22} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
