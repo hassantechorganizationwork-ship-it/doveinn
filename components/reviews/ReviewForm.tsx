@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,8 +14,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { FileDropzone } from "@/components/upload/FileDropzone";
 import type { Room } from "@/components/rooms/RoomCard";
 import { useToast } from "@/context/ToastContext";
+import { uploadWithProgress } from "@/lib/uploadWithProgress";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -41,7 +44,6 @@ type FieldErrors = Partial<Record<keyof FormState | "photo", string>>;
 const today = new Date().toISOString().split("T")[0];
 
 export function ReviewForm({ rooms }: { rooms: Room[] }) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
 
   const [formData, setFormData] = useState<FormState>({
@@ -53,6 +55,8 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
     review_text: "",
   });
   const [photo, setPhoto] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [uploadedPhotoUrl, setUploadedPhotoUrl] = useState<string | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -65,28 +69,8 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
+  const handlePhotoChange = (file: File | null) => {
     setErrors((prev) => ({ ...prev, photo: undefined }));
-
-    if (!file) {
-      setPhoto(null);
-      return;
-    }
-
-    if (!ALLOWED_PHOTO_TYPES.includes(file.type)) {
-      setErrors((prev) => ({ ...prev, photo: "Photo must be a JPEG, PNG, WEBP, or GIF image" }));
-      setPhoto(null);
-      e.target.value = "";
-      return;
-    }
-    if (file.size > MAX_PHOTO_BYTES) {
-      setErrors((prev) => ({ ...prev, photo: "Photo must be smaller than 5MB" }));
-      setPhoto(null);
-      e.target.value = "";
-      return;
-    }
-
     setPhoto(file);
   };
 
@@ -137,31 +121,37 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
       review_text: "",
     });
     setPhoto(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    setUploadProgress(null);
   };
 
   const submitReview = async (body: FormData) => {
     setSubmitting(true);
+    if (body.has("photo")) setUploadProgress(0);
     try {
-      const res = await fetch("/api/reviews", { method: "POST", body });
-      const json = await res.json();
+      const { status, json } = (await uploadWithProgress(
+        "/api/reviews",
+        body,
+        (pct) => setUploadProgress(pct)
+      )) as { status: number; json: Record<string, unknown> };
 
-      if (res.status === 409 && json.duplicate) {
+      if (status === 409 && json.duplicate) {
         // Same email has an existing review — ask before creating another,
         // rather than silently allowing unlimited duplicates.
         setPendingFormData(body);
-        setDuplicatePrompt(json.error);
+        setDuplicatePrompt(json.error as string);
         return;
       }
 
-      if (!res.ok || !json.success) {
+      if (status < 200 || status >= 300 || !json.success) {
         if (json.fieldErrors) {
-          setErrors(json.fieldErrors);
+          setErrors(json.fieldErrors as FieldErrors);
         }
-        toast.error(json.error ?? "Something went wrong. Please try again.");
+        toast.error((json.error as string) ?? "Something went wrong. Please try again.");
         return;
       }
 
+      const data = json.data as { photo_url?: string | null } | undefined;
+      setUploadedPhotoUrl(data?.photo_url ?? null);
       setWasRepeat(Boolean(json.isRepeat));
       setSubmitted(true);
       setDuplicatePrompt(null);
@@ -176,6 +166,7 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
       toast.error("Couldn't reach the server. Check your connection and try again.");
     } finally {
       setSubmitting(false);
+      setUploadProgress(null);
     }
   };
 
@@ -218,9 +209,23 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
         <p className="mt-2 text-sm text-muted-foreground">
           We appreciate you taking the time to share your experience.
         </p>
+        {uploadedPhotoUrl && (
+          <div className="relative mx-auto mt-4 h-40 w-full max-w-xs overflow-hidden rounded-lg">
+            <Image
+              src={uploadedPhotoUrl}
+              alt="Your uploaded photo"
+              fill
+              sizes="320px"
+              className="object-cover"
+            />
+          </div>
+        )}
         <Button
           className="mt-6 bg-gold text-gold-foreground hover:bg-gold/90"
-          onClick={() => setSubmitted(false)}
+          onClick={() => {
+            setSubmitted(false);
+            setUploadedPhotoUrl(null);
+          }}
         >
           Write Another Review
         </Button>
@@ -363,17 +368,18 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="photo">Photo (optional)</Label>
-          <Input
-            id="photo"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            ref={fileInputRef}
+          <FileDropzone
+            value={photo}
             onChange={handlePhotoChange}
-            className="cursor-pointer"
+            accept={ALLOWED_PHOTO_TYPES}
+            maxSizeBytes={MAX_PHOTO_BYTES}
+            error={errors.photo}
+            onError={(message) =>
+              setErrors((prev) => ({ ...prev, photo: message }))
+            }
+            progress={submitting ? uploadProgress : null}
+            disabled={submitting}
           />
-          {errors.photo && (
-            <p className="text-xs text-destructive">{errors.photo}</p>
-          )}
         </div>
       </div>
 

@@ -80,11 +80,13 @@ doveinn/
 │   ├── contact/                # ContactForm
 │   ├── amenities/               # AmenityIcon (keyword/emoji → icon mapping)
 │   ├── reviews/                 # ReviewForm (multipart submit, duplicate-email confirm), RecentReviews
+│   ├── upload/                  # FileDropzone — drag-and-drop image picker with preview + progress bar
 │   └── portal/                 # Sidebar, StatusBadge, BookingsTable, BookingDetail, skeletons
 ├── lib/
 │   ├── supabase/               # client.ts (browser), server.ts (cookie-aware), admin.ts (service role),
 │   │                            # public.ts (anon, for static generation), rooms.ts / bookings.ts / amenities.ts (queries + types)
 │   ├── data/                   # Original hardcoded room/booking fixtures, kept as fallback reference
+│   ├── uploadWithProgress.ts   # XMLHttpRequest-based multipart upload with real progress events
 │   └── utils.ts                # `cn()` class-merging helper
 ├── public/
 │   └── images/rooms/            # Real hotel photography (rooms, bathrooms, kitchen, exterior)
@@ -127,7 +129,8 @@ Defined in `app/globals.css` as CSS custom properties (Tailwind v4's CSS-first c
 - **Currency Converter** (`/currency`) — fetches live PKR exchange rates from the free [open.er-api.com](https://www.exchangerate-api.com/docs/free) API (no key required), with a real-time search/filter over the currency list and a live PKR-amount converter so guests can check room prices in their own currency.
 - **Amenities** — full CRUD feature backed by a real `amenities` table (self-built API routes, not a third-party service). Public read access; create/update/delete are restricted to authenticated managers via RLS and an explicit server-side session check in every write route. Managed from `/dashboard/amenities` (create form, inline edit, confirm-before-delete) and surfaced read-only in a "Hotel Amenities" section on the homepage.
 - **Guest Account System** (`/account`) — separate customer-facing auth from the manager portal, also via Supabase Auth. `/account/signup` and `/account/login` handle signup/login with per-field client-side validation; `/account` is a protected "My Bookings" page that fetches the logged-in guest's own bookings (matched by their session email, verified server-side) with loading/error/empty states and a confirm-before-logout step. The manager account is tagged `role: "manager"` in `app_metadata` (settable only by the service role) so a guest signup can never reach `/dashboard`.
-- **Reviews** (`/reviews`) — a 7-field guest review form (name, email, room dropdown, stay date, rating dropdown, review text, optional photo upload to Supabase Storage) with client- and server-side validation, plus a duplicate-email confirm step and a "Recent Reviews" list read from the same table.
+- **Reviews** (`/reviews`) — a 7-field guest review form (name, email, room dropdown, stay date, rating dropdown, review text, optional photo) with client- and server-side validation, plus a duplicate-email confirm step and a "Recent Reviews" list read from the same table.
+- **`FileDropzone`** (`components/upload/FileDropzone.tsx`) — reusable drag-and-drop image picker used for the review photo: drag-over highlight, click-to-browse fallback, instant client-side type/size validation, a thumbnail preview once a file is chosen, and a live progress bar during upload. Submission goes through `lib/uploadWithProgress.ts`, which uses `XMLHttpRequest` instead of `fetch()` specifically because `fetch` has no upload-progress event — `xhr.upload.onprogress` is the only browser API that exposes real (not simulated) progress. The photo lands in a public Supabase Storage bucket and its URL is shown back as an image preview on the success screen.
 
 ## Global State Management
 
