@@ -9,14 +9,24 @@ import { Spinner } from "@/components/ui/spinner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/portal/StatusBadge";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/context/AuthContext";
 import type { BookingWithRoom } from "@/lib/supabase/bookings";
 
 export default function MyAccountPage() {
   const router = useRouter();
 
-  const [guest, setGuest] = useState<{ name: string; email: string } | null>(
-    null
-  );
+  // Shared with the Navbar via AuthContext, instead of this page running
+  // its own separate getUser() call.
+  const { user } = useAuth();
+  const guest = user
+    ? {
+        name:
+          typeof user.user_metadata?.full_name === "string"
+            ? user.user_metadata.full_name
+            : "Guest",
+        email: user.email ?? "",
+      }
+    : null;
 
   const [bookings, setBookings] = useState<BookingWithRoom[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,18 +55,6 @@ export default function MyAccountPage() {
   }, []);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        setGuest({
-          name:
-            typeof data.user.user_metadata?.full_name === "string"
-              ? data.user.user_metadata.full_name
-              : "Guest",
-          email: data.user.email ?? "",
-        });
-      }
-    });
     fetchBookings();
   }, [fetchBookings]);
 

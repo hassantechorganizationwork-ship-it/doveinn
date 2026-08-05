@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ReviewForm } from "@/components/reviews/ReviewForm";
+import { RecentReviews } from "@/components/reviews/RecentReviews";
 import { getRooms } from "@/lib/supabase/rooms";
 
 export const metadata: Metadata = {
@@ -38,6 +39,8 @@ export default async function ReviewsPage() {
         <div className="mt-8">
           <ReviewForm rooms={rooms} />
         </div>
+
+        <RecentReviews />
       </section>
     </div>
   );

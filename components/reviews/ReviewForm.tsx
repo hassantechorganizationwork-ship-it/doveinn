@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Room } from "@/components/rooms/RoomCard";
+import { useToast } from "@/context/ToastContext";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -41,6 +42,7 @@ const today = new Date().toISOString().split("T")[0];
 
 export function ReviewForm({ rooms }: { rooms: Room[] }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const toast = useToast();
 
   const [formData, setFormData] = useState<FormState>({
     guest_name: "",
@@ -52,9 +54,6 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
   });
   const [photo, setPhoto] = useState<File | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [banner, setBanner] = useState<{ type: "success" | "error"; text: string } | null>(
-    null
-  );
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [wasRepeat, setWasRepeat] = useState(false);
@@ -159,10 +158,7 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
         if (json.fieldErrors) {
           setErrors(json.fieldErrors);
         }
-        setBanner({
-          type: "error",
-          text: json.error ?? "Something went wrong. Please try again.",
-        });
+        toast.error(json.error ?? "Something went wrong. Please try again.");
         return;
       }
 
@@ -171,11 +167,13 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
       setDuplicatePrompt(null);
       setPendingFormData(null);
       resetForm();
+      toast.success(
+        json.isRepeat
+          ? "Review submitted — thanks again!"
+          : "Review submitted — thank you!"
+      );
     } catch {
-      setBanner({
-        type: "error",
-        text: "Couldn't reach the server. Check your connection and try again.",
-      });
+      toast.error("Couldn't reach the server. Check your connection and try again.");
     } finally {
       setSubmitting(false);
     }
@@ -183,7 +181,6 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBanner(null);
     setDuplicatePrompt(null);
     if (!validate()) return;
 
@@ -260,19 +257,6 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
               No, cancel
             </Button>
           </div>
-        </div>
-      )}
-
-      {!duplicatePrompt && banner && (
-        <div
-          className={
-            "mb-6 rounded-lg px-4 py-3 text-sm font-medium " +
-            (banner.type === "success"
-              ? "bg-green-50 text-green-700"
-              : "bg-destructive/10 text-destructive")
-          }
-        >
-          {banner.text}
         </div>
       )}
 

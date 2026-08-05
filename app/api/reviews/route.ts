@@ -7,6 +7,29 @@ const ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif
 
 type FieldErrors = Record<string, string>;
 
+export async function GET() {
+  const supabase = createAdminClient();
+
+  // Public listing only exposes what's needed to display a review —
+  // guest_email is deliberately left out (RLS also has no public SELECT
+  // policy on this table at all; this route uses the admin client and is
+  // the only sanctioned read path).
+  const { data, error } = await supabase
+    .from("reviews")
+    .select("id, guest_name, rating, review_text, stay_date, photo_url, created_at, rooms(name)")
+    .order("created_at", { ascending: false })
+    .limit(12);
+
+  if (error) {
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ success: true, data });
+}
+
 export async function POST(request: NextRequest) {
   let form: FormData;
   try {

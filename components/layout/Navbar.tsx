@@ -13,7 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -29,23 +29,11 @@ export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [accountHref, setAccountHref] = useState("/account/login");
 
-  useEffect(() => {
-    const supabase = createClient();
-
-    supabase.auth.getUser().then(({ data }) => {
-      setAccountHref(data.user ? "/account" : "/account/login");
-    });
-
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setAccountHref(session?.user ? "/account" : "/account/login");
-      }
-    );
-
-    return () => subscription.subscription.unsubscribe();
-  }, []);
+  // Shared with the My Bookings page via AuthContext, instead of each
+  // component running its own getUser()/onAuthStateChange pair.
+  const { user } = useAuth();
+  const accountHref = user ? "/account" : "/account/login";
 
   // Every page starts with a transparent navbar sitting on top of that
   // page's own dark header block, so there's no visible seam — it only

@@ -9,11 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AmenityIcon } from "@/components/amenities/AmenityIcon";
+import { useToast } from "@/context/ToastContext";
 import type { Amenity } from "@/lib/supabase/amenities";
 
-type Toast = { type: "success" | "error"; text: string };
-
 export default function AmenitiesPage() {
+  const toast = useToast();
+
   const [amenities, setAmenities] = useState<Amenity[] | null>(null);
   const [listLoading, setListLoading] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
@@ -33,14 +34,6 @@ export default function AmenitiesPage() {
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const [toast, setToast] = useState<Toast | null>(null);
-
-  useEffect(() => {
-    if (!toast) return;
-    const timer = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(timer);
-  }, [toast]);
 
   const fetchAmenities = useCallback(async () => {
     setListLoading(true);
@@ -89,7 +82,7 @@ export default function AmenitiesPage() {
       setName("");
       setDescription("");
       setIcon("");
-      setToast({ type: "success", text: "Amenity added." });
+      toast.success("Amenity added.");
     } catch (err) {
       setFormError(
         err instanceof Error ? err.message : "Something went wrong."
@@ -139,7 +132,7 @@ export default function AmenitiesPage() {
         (prev) => prev?.map((a) => (a.id === id ? json.data : a)) ?? prev
       );
       setEditingId(null);
-      setToast({ type: "success", text: "Amenity updated." });
+      toast.success("Amenity updated.");
     } catch (err) {
       setEditError(
         err instanceof Error ? err.message : "Something went wrong."
@@ -158,12 +151,9 @@ export default function AmenitiesPage() {
         throw new Error(json.error ?? "Failed to delete amenity.");
       }
       setAmenities((prev) => prev?.filter((a) => a.id !== id) ?? prev);
-      setToast({ type: "success", text: "Amenity deleted." });
+      toast.success("Amenity deleted.");
     } catch (err) {
-      setToast({
-        type: "error",
-        text: err instanceof Error ? err.message : "Something went wrong.",
-      });
+      toast.error(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setDeletingId(null);
       setConfirmDeleteId(null);
@@ -176,19 +166,6 @@ export default function AmenitiesPage() {
       <p className="mt-1 text-sm text-muted-foreground">
         Manage the amenities shown across the site.
       </p>
-
-      {toast && (
-        <div
-          className={
-            "mt-4 rounded-lg px-4 py-3 text-sm font-medium " +
-            (toast.type === "success"
-              ? "bg-green-50 text-green-700"
-              : "bg-destructive/10 text-destructive")
-          }
-        >
-          {toast.text}
-        </div>
-      )}
 
       {/* CREATE FORM */}
       <form

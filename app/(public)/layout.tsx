@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://doveinn.pk"),
@@ -76,14 +77,16 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-screen flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <Navbar />
-      <main className="flex-1 pt-20">{children}</main>
-      <Footer />
-    </div>
+    <AuthProvider>
+      <div className="flex min-h-screen flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <Navbar />
+        <main className="flex-1 pt-20">{children}</main>
+        <Footer />
+      </div>
+    </AuthProvider>
   );
 }
