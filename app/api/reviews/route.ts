@@ -104,7 +104,8 @@ export async function POST(request: NextRequest) {
     .select("id", { count: "exact", head: true })
     .eq("guest_email", guestEmail);
 
-  const isRepeat = (existingCount ?? 0) > 0;
+  const priorCount = existingCount ?? 0;
+  const isRepeat = priorCount > 0;
 
   if (isRepeat && !force) {
     return NextResponse.json(
@@ -112,7 +113,9 @@ export async function POST(request: NextRequest) {
         success: false,
         duplicate: true,
         error:
-          "You've already submitted a review with this email address. Submit another one anyway?",
+          priorCount === 1
+            ? "You've already submitted a review once. Do you want to submit again?"
+            : "You've already submitted multiple reviews. Do you want to submit again?",
       },
       { status: 409 }
     );
