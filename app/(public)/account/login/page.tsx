@@ -22,6 +22,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justSignedUp = searchParams.get("confirm") === "1";
+  const confirmationFailed = searchParams.get("error") === "confirmation_failed";
 
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -88,6 +89,13 @@ function LoginForm() {
         <p className="mt-6 rounded-lg bg-green-50 px-4 py-3 text-center text-sm text-green-700">
           Account created! Please check your email to confirm your address
           before logging in.
+        </p>
+      )}
+
+      {confirmationFailed && (
+        <p className="mt-6 rounded-lg bg-destructive/10 px-4 py-3 text-center text-sm text-destructive">
+          That confirmation link is invalid or has expired. Please sign up
+          again or request a new link.
         </p>
       )}
 

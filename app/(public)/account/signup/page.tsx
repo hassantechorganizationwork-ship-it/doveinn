@@ -78,6 +78,7 @@ export default function SignupPage() {
       password: formData.password,
       options: {
         data: { full_name: formData.fullName },
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
     });
     setSubmitting(false);
