@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/public";
 import type { Room } from "@/components/rooms/RoomCard";
 
@@ -37,7 +38,10 @@ export async function getRooms(): Promise<Room[]> {
   return (data ?? []).map(mapDbRoom);
 }
 
-export async function getRoomBySlug(slug: string): Promise<Room | null> {
+// Wrapped in React's cache() so generateMetadata and the page component
+// (which both need the same room) share a single request-scoped DB call
+// instead of querying Supabase twice per page load.
+export const getRoomBySlug = cache(async (slug: string): Promise<Room | null> => {
   const supabase = createClient();
   const { data } = await supabase
     .from("rooms")
@@ -47,7 +51,7 @@ export async function getRoomBySlug(slug: string): Promise<Room | null> {
     .maybeSingle();
 
   return data ? mapDbRoom(data) : null;
-}
+});
 
 export async function getRoomSlugs(): Promise<string[]> {
   const supabase = createClient();

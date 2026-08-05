@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Check, Users } from "lucide-react";
@@ -38,6 +39,31 @@ const POLICIES = [
 export async function generateStaticParams() {
   const slugs = await getRoomSlugs();
   return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const room = await getRoomBySlug(slug);
+
+  if (!room) {
+    return { title: "Room Not Found" };
+  }
+
+  const description = `${DESCRIPTIONS[room.type]} Sleeps up to ${room.capacity} guests, from Rs ${room.price.toLocaleString()}/night at Dove Inn Hotel.`;
+
+  return {
+    title: room.name,
+    description,
+    openGraph: {
+      title: `${room.name} | Dove Inn Hotel`,
+      description,
+      images: [{ url: ROOM_GALLERY[room.type][0] }],
+    },
+  };
 }
 
 export default async function RoomDetailPage({
