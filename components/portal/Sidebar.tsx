@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, LayoutDashboard, CalendarCheck, BedDouble, Sparkles, LogOut } from "lucide-react";
+import { Menu, LayoutDashboard, CalendarCheck, BedDouble, Sparkles, BarChart3, LogOut } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -20,6 +20,7 @@ const NAV_LINKS = [
   { href: "/dashboard/bookings", label: "Bookings", icon: CalendarCheck },
   { href: "/dashboard/rooms", label: "Rooms", icon: BedDouble },
   { href: "/dashboard/amenities", label: "Amenities", icon: Sparkles },
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 function SidebarNav({

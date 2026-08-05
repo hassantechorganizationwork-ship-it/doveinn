@@ -30,6 +30,7 @@ I built this on **Next.js 16 (App Router)** rather than a plain React SPA or a s
 | Backend / Database | [Supabase](https://supabase.com/) (Postgres, Auth, Row Level Security) |
 | Auth | Supabase Auth (`@supabase/ssr`) via Next.js middleware |
 | Global state | React Context API (`context/AuthContext.tsx`, `context/ToastContext.tsx`) — no external state library; the app's shared state (auth session, toast notifications) is simple enough that Context covers it without the overhead of Redux/Zustand |
+| Charts | [Recharts](https://recharts.org/) — `/dashboard/analytics` |
 | Forms & utilities | `date-fns`, `class-variance-authority`, `clsx`, `tailwind-merge` |
 | Deployment | [Vercel](https://vercel.com/) |
 
@@ -64,7 +65,8 @@ doveinn/
 │   │       ├── bookings/         #     All bookings, filterable, confirm/reject
 │   │       ├── bookings/[ref]/   #     Single booking detail + manager notes
 │   │       ├── rooms/            #     Room price management
-│   │       └── amenities/        #     Amenities CRUD (create/edit/delete)
+│   │       ├── amenities/        #     Amenities CRUD (create/edit/delete)
+│   │       └── analytics/        #     Charts dashboard — trend, room, and status breakdowns
 │   └── api/                    # Serverless API routes
 │       ├── bookings/route.ts    #   POST — create a new booking
 │       ├── bookings/[ref]/route.ts # PATCH — confirm/reject a booking, blocks dates
@@ -131,6 +133,7 @@ Defined in `app/globals.css` as CSS custom properties (Tailwind v4's CSS-first c
 - **Guest Account System** (`/account`) — separate customer-facing auth from the manager portal, also via Supabase Auth. `/account/signup` and `/account/login` handle signup/login with per-field client-side validation; `/account` is a protected "My Bookings" page that fetches the logged-in guest's own bookings (matched by their session email, verified server-side) with loading/error/empty states and a confirm-before-logout step. The manager account is tagged `role: "manager"` in `app_metadata` (settable only by the service role) so a guest signup can never reach `/dashboard`.
 - **Reviews** (`/reviews`) — a 7-field guest review form (name, email, room dropdown, stay date, rating dropdown, review text, optional photo) with client- and server-side validation, plus a duplicate-email confirm step and a "Recent Reviews" list read from the same table.
 - **`FileDropzone`** (`components/upload/FileDropzone.tsx`) — reusable drag-and-drop image picker used for the review photo: drag-over highlight, click-to-browse fallback, instant client-side type/size validation, a thumbnail preview once a file is chosen, and a live progress bar during upload. Submission goes through `lib/uploadWithProgress.ts`, which uses `XMLHttpRequest` instead of `fetch()` specifically because `fetch` has no upload-progress event — `xhr.upload.onprogress` is the only browser API that exposes real (not simulated) progress. The photo lands in a public Supabase Storage bucket and its URL is shown back as an image preview on the success screen.
+- **Analytics** (`/dashboard/analytics`) — manager-only charts dashboard (Recharts): a dual-axis line chart (bookings count + advance revenue trend, bucketed by day or month depending on the selected range), a horizontal bar chart of bookings per room, a status-breakdown donut chart, and 4 stat cards, all recomputed client-side via `useMemo` from one `/api/dashboard/analytics` fetch whenever the date-range filter (7/30/90 days, all time) changes — no refetch needed per filter change. Has its own loading skeleton, error+retry, and an explicit empty state for a range with zero bookings.
 
 ## Global State Management
 
