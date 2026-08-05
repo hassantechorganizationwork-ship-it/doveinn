@@ -236,6 +236,7 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
   return (
     <form
       onSubmit={handleSubmit}
+      noValidate
       className="rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8"
     >
       {duplicatePrompt && (

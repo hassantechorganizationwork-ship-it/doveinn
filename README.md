@@ -31,6 +31,7 @@ I built this on **Next.js 16 (App Router)** rather than a plain React SPA or a s
 | Auth | Supabase Auth (`@supabase/ssr`) via Next.js middleware |
 | Global state | React Context API (`context/AuthContext.tsx`, `context/ToastContext.tsx`) — no external state library; the app's shared state (auth session, toast notifications) is simple enough that Context covers it without the overhead of Redux/Zustand |
 | Charts | [Recharts](https://recharts.org/) — `/dashboard/analytics` |
+| Testing | [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/react) (unit/component/API), [Playwright](https://playwright.dev/) (E2E) |
 | Forms & utilities | `date-fns`, `class-variance-authority`, `clsx`, `tailwind-merge` |
 | Deployment | [Vercel](https://vercel.com/) |
 
@@ -40,6 +41,14 @@ I built this on **Next.js 16 (App Router)** rather than a plain React SPA or a s
 doveinn/
 ├── middleware.ts              # Route guards for both /dashboard (manager, role-checked) and /account (guest)
 ├── components.json            # shadcn/ui configuration (style, aliases, icon library)
+├── vitest.config.ts            # Vitest setup (jsdom environment, @/ path alias)
+├── playwright.config.ts        # Playwright setup (auto-starts the dev server if needed)
+├── tests/
+│   ├── unit/                    # Frontend component tests (AmenityIcon, StatusBadge, FileDropzone, ReviewForm, Navbar)
+│   ├── api/                     # Backend route-handler tests (amenities, reviews, dashboard analytics)
+│   └── helpers/supabaseMock.ts  # Fakes the Supabase client's chainable query builder for the API tests
+├── e2e/
+│   └── review-flow.spec.ts     # Real-browser E2E: submit a review, see it appear, verify in the database
 ├── context/                    # Global state (React Context, no external library)
 │   ├── AuthContext.tsx          #   Shared guest-auth session (Navbar + My Bookings both read from here)
 │   └── ToastContext.tsx         #   Global toast notifications, mounted once at the root layout
@@ -178,3 +187,35 @@ Open [http://localhost:3000](http://localhost:3000) for the public site, or [htt
 npm run build
 npm run start
 ```
+
+## Testing
+
+Three layers, each with its own tool and its own reason for existing:
+
+| Layer | Tool | What it covers |
+|---|---|---|
+| Frontend (component) | [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/react) | Rendering, user interactions (typing, clicking, file selection), client-side form validation |
+| Backend (API routes) | Vitest, with `tests/helpers/supabaseMock.ts` faking the Supabase client | Every route's happy path and its failure/validation paths, without hitting a real database |
+| End-to-end | [Playwright](https://playwright.dev/) | A real browser driving a real user flow against the actual running app and the real Supabase backend |
+
+```bash
+# Frontend + backend unit tests (tests/ directory)
+npm test
+
+# Same, in watch mode while developing
+npm run test:watch
+
+# With a coverage report
+npm run test:coverage
+
+# End-to-end test (spins up the dev server itself if one isn't already running)
+npm run test:e2e
+```
+
+**Frontend tests** (`tests/unit/`) — `AmenityIcon` (keyword→icon mapping, emoji passthrough, fallback), `StatusBadge` (label per status), `FileDropzone` (file-picker interaction, type/size validation, remove button), `ReviewForm` (per-field validation errors on submit), `Navbar` (renders nav links, auth-aware link target) — all render against the real component code; API calls and the Supabase browser client are mocked so these run offline and don't touch the database.
+
+**Backend tests** (`tests/api/`) — call the actual route handler functions (`GET`/`POST`/`PATCH`/`DELETE` exported from each `route.ts`) directly with a constructed `NextRequest`, with `@/lib/supabase/admin` and `@/lib/supabase/server` mocked via `tests/helpers/supabaseMock.ts`. Covers `/api/amenities`, `/api/amenities/[id]`, `/api/reviews`, and `/api/dashboard/analytics` — auth failures (401), validation failures (400), not-found (404), the review form's duplicate-email business rule (409), and success paths (200/201).
+
+**End-to-end test** (`e2e/review-flow.spec.ts`) — fills out and submits the real Review form in a real Chromium browser against the real dev server and real Supabase backend, confirms the success screen appears, then independently verifies the row actually exists in the `reviews` table (and deletes it afterward so repeated runs don't accumulate test data). Requires `.env.local` to be set up and either an already-running dev server or none at all (Playwright will start one).
+
+One of these tests caught a real bug during development: four forms (`ReviewForm`, the guest login/signup forms, `ContactForm`) were missing `noValidate`, so the browser's native HTML5 validation silently intercepted the submit event on a malformed email before the app's own `onSubmit` handler — and therefore its nicer per-field error message — ever ran.
