@@ -62,7 +62,7 @@ export default function ContactPage() {
               </a>
               <div className="flex items-center gap-3">
                 <Mail className="size-5 shrink-0 text-gold" />
-                <span className="text-primary">
+                <span className="break-words text-primary">
                   hassanshafiq03240041300@gmail.com
                 </span>
               </div>

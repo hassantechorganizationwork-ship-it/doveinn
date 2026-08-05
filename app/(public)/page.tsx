@@ -200,7 +200,7 @@ export default async function Home() {
           </div>
           <div className="flex items-center justify-center gap-2">
             <Mail className="size-4 text-gold" />
-            <span>hassanshafiq03240041300@gmail.com</span>
+            <span className="break-words">hassanshafiq03240041300@gmail.com</span>
           </div>
           <div className="flex items-center justify-center gap-2">
             <MapPin className="size-4 text-gold" />

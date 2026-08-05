@@ -8,6 +8,45 @@ A full-stack hotel booking website for a 12-room boutique hotel in Lahore, Pakis
 
 ---
 
+## Architecture Overview
+
+```
+┌──────────────────────────────┐
+│         Browser (user)        │
+└───────────────┬───────────────┘
+                │ HTTPS
+┌───────────────▼───────────────┐
+│   Next.js 16 on Vercel        │   ← frontend AND backend, one deploy
+│  ┌──────────────────────────┐  │
+│  │ Server Components        │  │  Rooms, room detail, home — data
+│  │ (SSG / ISR)               │  │  fetched at build/revalidate time
+│  ├──────────────────────────┤  │
+│  │ Client Components         │  │  Booking flow, Reviews, Currency,
+│  │                           │  │  Amenities admin, Analytics charts
+│  ├──────────────────────────┤  │
+│  │ API Routes (app/api/*)   │  │  bookings, reviews, amenities,
+│  │                           │  │  account/bookings, dashboard/analytics
+│  ├──────────────────────────┤  │
+│  │ middleware.ts             │  │  Role-checked guard for /dashboard
+│  │                           │  │  (manager) and /account (guest)
+│  └──────────────────────────┘  │
+└───────────────┬───────────────┘
+                │ service-role key (server-side only)
+                │ or anon key (public reads)
+┌───────────────▼───────────────┐
+│           Supabase             │
+│  Postgres · Auth · Storage     │  rooms, bookings, amenities, reviews
+└────────────────────────────────┘
+```
+
+**Two separate frontends sharing one backend:**
+- **Public site** (`app/(public)/`) — marketing pages, booking flow, guest reviews, currency converter, and a guest account system (its own Supabase Auth session, role-less).
+- **Manager portal** (`app/(portal)/`) — booking management, room pricing, amenities CRUD, analytics dashboard. Gated by the *same* Supabase Auth, but the middleware additionally checks `app_metadata.role === "manager"` (settable only by the service-role key, never by the user) before allowing in — so a guest signing up can never reach it.
+
+**Why one deploy instead of a separate frontend/backend:** Next.js API routes run as Vercel serverless functions in the same project as the pages that call them — there's no separate backend service to deploy, version, or CORS-configure. Supabase is the actual persistence layer (Postgres for data, Auth for both user systems, Storage for uploaded review photos); Next.js is a thin, typed layer in front of it that also renders the UI.
+
+---
+
 ## Why I Chose This Framework
 
 I built this on **Next.js 16 (App Router)** rather than a plain React SPA or a separate frontend/backend split, for a few reasons specific to a hotel site:

@@ -45,7 +45,7 @@ export function Footer() {
             <h4 className="text-sm font-semibold uppercase tracking-wide text-gold">
               Contact
             </h4>
-            <ul className="mt-4 space-y-3 text-sm text-primary-foreground/70">
+            <ul className="mt-4 space-y-3 text-sm text-primary-foreground/70 break-words">
               <li>+92 324 0041300</li>
               <li>hassanshafiq03240041300@gmail.com</li>
               <li>
