@@ -76,6 +76,10 @@ ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Rooms are publicly readable"
   ON rooms FOR SELECT USING (true);
 
+-- Rooms: writes restricted to logged-in manager accounts
+CREATE POLICY "Authenticated users can update rooms"
+  ON rooms FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+
 -- Amenities: public read, writes restricted to logged-in manager accounts
 CREATE POLICY "Amenities are publicly readable"
   ON amenities FOR SELECT USING (true);
