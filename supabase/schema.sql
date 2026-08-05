@@ -52,11 +52,25 @@ CREATE TABLE amenities (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- REVIEWS TABLE
+CREATE TABLE reviews (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  guest_name TEXT NOT NULL,
+  guest_email TEXT NOT NULL,
+  room_id UUID REFERENCES rooms(id),
+  stay_date DATE NOT NULL,
+  rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  review_text TEXT NOT NULL,
+  photo_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Enable Row Level Security
 ALTER TABLE rooms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE room_availability ENABLE ROW LEVEL SECURITY;
 ALTER TABLE amenities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies: rooms are public read
 CREATE POLICY "Rooms are publicly readable"
@@ -86,6 +100,11 @@ CREATE POLICY "Public can read own booking by ref"
 -- Availability: public read
 CREATE POLICY "Availability is publicly readable"
   ON room_availability FOR SELECT USING (true);
+
+-- Reviews: anyone can submit one (no guest account required); reading is
+-- reserved for the manager portal / service role, not exposed publicly.
+CREATE POLICY "Anyone can submit a review"
+  ON reviews FOR INSERT WITH CHECK (true);
 
 -- SEED ROOMS DATA
 INSERT INTO rooms (name, slug, type, price_per_night, capacity, amenities) VALUES

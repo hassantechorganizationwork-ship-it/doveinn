@@ -5,6 +5,7 @@ const QUICK_LINKS = [
   { href: "/", label: "Home" },
   { href: "/rooms", label: "Rooms" },
   { href: "/gallery", label: "Gallery" },
+  { href: "/reviews", label: "Reviews" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
