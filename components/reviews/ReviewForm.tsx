@@ -389,7 +389,9 @@ export function ReviewForm({ rooms }: { rooms: Room[] }) {
         disabled={submitting}
         className="mt-8 w-full bg-gold text-gold-foreground hover:bg-gold/90"
       >
-        {submitting && <Spinner />}
+        {/* When a photo is attached, the dropzone's progress bar is the
+            one real loading indicator — no need to also spin this icon. */}
+        {submitting && !photo && <Spinner />}
         {submitting ? "Submitting..." : "Submit Review"}
       </Button>
     </form>
