@@ -131,10 +131,15 @@ export function BookingSidebar({ room }: { room: Room }) {
           Book Now
         </Button>
 
+        {/*
+          WhatsApp's brand green (#25D366) only reaches 1.9:1 as text on this
+          card's near-white background. Darker greens keep the association
+          while clearing AA for the label and 3:1 for the border.
+        */}
         <Button
           size="lg"
           variant="outline"
-          className="mt-3 w-full border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
+          className="mt-3 w-full border-green-600 text-green-700 hover:bg-green-600/10"
           render={
             <a
               href={`https://wa.me/${WHATSAPP_NUMBER}`}

@@ -123,7 +123,7 @@ export default async function RoomDetailPage({
               Rooms
             </Link>
             <span>/</span>
-            <span className="text-gold">{room.name}</span>
+            <span className="text-gold-text">{room.name}</span>
           </p>
         </div>
       </section>
@@ -216,8 +216,16 @@ export default async function RoomDetailPage({
             </div>
           </div>
 
-          {/* RIGHT COLUMN — BOOKING SIDEBAR */}
-          <BookingSidebar room={room} />
+          {/*
+            RIGHT COLUMN — BOOKING SIDEBAR
+            Sticky on desktop: the left column is far taller, so a static
+            sidebar scrolls away and leaves the whole right side empty for
+            most of the page — keeping the price and date pickers in view
+            means the booking action is always one click away.
+          */}
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <BookingSidebar room={room} />
+          </div>
         </div>
 
         {/* SIMILAR ROOMS */}

@@ -31,14 +31,14 @@ export function RoomCard({ room }: { room: Room }) {
   const remaining = room.amenities.length - visibleAmenities.length;
 
   return (
-    <Card className="overflow-hidden border-none py-0 shadow-sm">
-      <div className="relative h-48 w-full">
+    <Card className="group flex h-full flex-col overflow-hidden border-none py-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className="relative h-48 w-full overflow-hidden">
         <Image
           src={ROOM_IMAGES[room.type]}
           alt={room.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <Badge
           className={cn(
@@ -52,7 +52,7 @@ export function RoomCard({ room }: { room: Room }) {
         </Badge>
       </div>
 
-      <CardContent className="flex flex-col gap-4 p-5">
+      <CardContent className="flex flex-1 flex-col gap-4 p-5">
         <div>
           <h3 className="font-heading text-lg font-bold text-primary">
             {room.name}
@@ -82,7 +82,9 @@ export function RoomCard({ room }: { room: Room }) {
           )}
         </div>
 
-        <div className="flex flex-col gap-2 sm:flex-row">
+        {/* mt-auto so the buttons line up across cards whose amenity rows
+            wrap to different heights, instead of floating mid-card. */}
+        <div className="mt-auto flex flex-col gap-2 sm:flex-row">
           <Button
             variant="outline"
             disabled={navigating}

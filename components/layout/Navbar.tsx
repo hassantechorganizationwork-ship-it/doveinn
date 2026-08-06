@@ -19,10 +19,14 @@ import { cn } from "@/lib/utils";
 // These pages have a plain white background right from the top, with no
 // dark hero image behind the navbar — so the transparent/white-text state
 // would render invisible on them. Force the solid bar there instead.
-const LIGHT_BACKGROUND_ROUTES = [
-  "/account",
-  "/booking",
-];
+// Note /rooms itself has a dark page header, so only its detail pages
+// (/rooms/some-slug, which open on a light breadcrumb strip) belong here.
+function hasLightBackground(pathname: string) {
+  if (pathname === "/account" || pathname.startsWith("/account/")) return true;
+  if (pathname === "/booking" || pathname.startsWith("/booking/")) return true;
+  if (pathname.startsWith("/rooms/")) return true;
+  return false;
+}
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -63,10 +67,7 @@ export function Navbar() {
     setMenuOpen(false);
   }, [pathname]);
 
-  const forcedSolid = LIGHT_BACKGROUND_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`)
-  );
-  const solid = scrolled || forcedSolid;
+  const solid = scrolled || hasLightBackground(pathname);
 
   return (
     <header

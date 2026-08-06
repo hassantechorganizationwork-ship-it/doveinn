@@ -51,7 +51,7 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-md rounded-xl bg-white p-10 shadow-lg">
         <div className="text-center">
-          <p className="font-heading text-3xl text-gold">Dove Inn Hotel</p>
+          <p className="font-heading text-3xl text-gold-text">Dove Inn Hotel</p>
           <h1 className="mt-4 font-heading text-xl text-primary">
             Manager Login
           </h1>

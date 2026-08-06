@@ -106,7 +106,7 @@ export default function SignupPage() {
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-20">
       <div className="text-center">
-        <p className="font-heading text-2xl text-gold">Dove Inn Hotel</p>
+        <p className="font-heading text-2xl text-gold-text">Dove Inn Hotel</p>
         <h1 className="mt-4 font-heading text-xl text-primary">
           Create Your Account
         </h1>

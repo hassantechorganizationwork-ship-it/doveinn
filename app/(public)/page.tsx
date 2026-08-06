@@ -10,6 +10,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { RoomCard } from "@/components/rooms/RoomCard";
+import { SectionHeading } from "@/components/layout/SectionHeading";
 import { AmenityIcon } from "@/components/amenities/AmenityIcon";
 import { getRooms } from "@/lib/supabase/rooms";
 import { getAmenities } from "@/lib/supabase/amenities";
@@ -51,7 +52,13 @@ export default async function Home() {
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-primary/60" />
+        {/*
+          A vertical gradient rather than a flat 60% wash: it keeps the
+          building visible through the middle of the frame while still
+          darkening the top (behind the transparent navbar) and the bottom
+          (behind the headline and buttons) enough for white text.
+        */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/50 to-primary/85" />
 
         <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">
@@ -86,9 +93,9 @@ export default async function Home() {
 
       {/* ROOM TYPES SECTION */}
       <section className="mx-auto max-w-6xl px-6 py-12 md:py-20 lg:py-28">
-        <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
+        <SectionHeading subtitle="Twelve rooms, two styles — pick the one that fits your stay.">
           Our Rooms
-        </h2>
+        </SectionHeading>
 
         <div className="mt-12 grid gap-8 md:grid-cols-2">
           {ROOM_TYPES.map((room) => (
@@ -120,9 +127,9 @@ export default async function Home() {
       {featuredRooms.length > 0 && (
         <section className="bg-muted py-12 md:py-20 lg:py-28">
           <div className="mx-auto max-w-6xl px-6">
-            <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
+            <SectionHeading subtitle="Our most-booked master bedrooms, ready when you are.">
               Featured Rooms
-            </h2>
+            </SectionHeading>
 
             <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {featuredRooms.map((room) => (
@@ -146,13 +153,22 @@ export default async function Home() {
       {/* AMENITIES SECTION */}
       {amenities.length > 0 && (
         <section className="mx-auto max-w-6xl px-6 py-12 md:py-20 lg:py-28">
-          <h2 className="text-center font-heading text-3xl text-primary md:text-4xl">
+          <SectionHeading subtitle="Everything included with your stay, at no extra cost.">
             Hotel Amenities
-          </h2>
+          </SectionHeading>
 
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/*
+            Centred flex-wrap rather than a fixed grid: with only one or two
+            amenities in the database, a 3-column grid leaves them stranded
+            against a wide empty gap instead of sitting centred under the
+            heading.
+          */}
+          <div className="mt-12 flex flex-wrap justify-center gap-6">
             {amenities.map((amenity) => (
-              <Card key={amenity.id} className="border-none shadow-sm">
+              <Card
+                key={amenity.id}
+                className="w-full max-w-sm border-none shadow-sm transition-shadow hover:shadow-md sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
+              >
                 <CardContent className="flex items-start gap-4 p-6">
                   <AmenityIcon icon={amenity.icon} className="mt-1 shrink-0" />
                   <div>
@@ -175,12 +191,12 @@ export default async function Home() {
       {/* CTA BANNER SECTION */}
       <section className="bg-primary py-12 md:py-20 lg:py-28">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="font-heading text-3xl text-primary-foreground md:text-4xl">
+          <SectionHeading
+            onDark
+            subtitle="Book your room today and experience true hospitality."
+          >
             Ready for a Comfortable Stay?
-          </h2>
-          <p className="mt-4 text-primary-foreground/70">
-            Book your room today and experience true hospitality.
-          </p>
+          </SectionHeading>
           <Button
             size="lg"
             className="mt-8 bg-gold text-gold-foreground hover:bg-gold/90"
