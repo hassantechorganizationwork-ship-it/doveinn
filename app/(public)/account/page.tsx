@@ -3,8 +3,8 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CheckCircle2, X } from "lucide-react";
-import { differenceInCalendarDays } from "date-fns";
+import { BedDouble, CalendarDays, CheckCircle2, X } from "lucide-react";
+import { differenceInCalendarDays, format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -158,6 +158,8 @@ function MyAccountContent() {
         )}
       </div>
 
+      <div className="mt-6 border-t border-border" />
+
       {/* LOADING STATE */}
       {loading && (
         <div className="mt-8 flex flex-col gap-4">
@@ -190,8 +192,13 @@ function MyAccountContent() {
 
       {/* EMPTY STATE */}
       {!loading && !error && bookings?.length === 0 && (
-        <div className="mt-8 rounded-xl border border-border bg-card py-16 text-center">
-          <p className="text-muted-foreground">No bookings yet.</p>
+        <div className="mt-8 flex flex-col items-center rounded-xl border border-border bg-card py-16 text-center">
+          <div className="flex size-14 items-center justify-center rounded-full bg-gold/10">
+            <BedDouble className="size-7 text-gold-text" />
+          </div>
+          <p className="mt-4 text-muted-foreground">
+            You don&apos;t have any bookings yet.
+          </p>
           <Button
             className="mt-4 bg-gold text-gold-foreground hover:bg-gold/90"
             render={<Link href="/rooms" />}
@@ -212,32 +219,35 @@ function MyAccountContent() {
             return (
               <div
                 key={booking.id}
-                className="rounded-xl border border-border bg-card p-5"
+                className="rounded-xl border border-border bg-card p-5 transition-shadow hover:shadow-sm"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-heading text-lg text-primary">
-                    {booking.rooms?.name ?? "Room"}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <BedDouble className="size-4 text-gold-text" />
+                    <p className="font-heading text-lg text-primary">
+                      {booking.rooms?.name ?? "Room"}
+                    </p>
+                  </div>
                   <StatusBadge status={booking.booking_status} />
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Ref# {booking.booking_ref}
                 </p>
-                <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
-                  <span className="text-primary">
-                    <span className="text-muted-foreground">Check-in: </span>
-                    {booking.check_in}
-                  </span>
-                  <span className="text-primary">
-                    <span className="text-muted-foreground">Check-out: </span>
-                    {booking.check_out}
+                <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-sm">
+                  <span className="flex items-center gap-1.5 text-primary">
+                    <CalendarDays className="size-3.5 text-muted-foreground" />
+                    {format(new Date(booking.check_in), "d MMM yyyy")}
+                    {" – "}
+                    {format(new Date(booking.check_out), "d MMM yyyy")}
                   </span>
                   <span className="text-primary">
                     <span className="text-muted-foreground">Nights: </span>
                     {nights}
                   </span>
-                  <span className="text-primary">
-                    <span className="text-muted-foreground">Total: </span>
+                  <span className="font-medium text-primary">
+                    <span className="text-muted-foreground font-normal">
+                      Total:{" "}
+                    </span>
                     Rs {booking.total_amount.toLocaleString()}
                   </span>
                 </div>

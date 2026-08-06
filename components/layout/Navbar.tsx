@@ -16,6 +16,14 @@ import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
+// These pages have a plain white background right from the top, with no
+// dark hero image behind the navbar — so the transparent/white-text state
+// would render invisible on them. Force the solid bar there instead.
+const LIGHT_BACKGROUND_ROUTES = [
+  "/account",
+  "/booking",
+];
+
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/rooms", label: "Rooms" },
@@ -50,7 +58,10 @@ export function Navbar() {
     setMenuOpen(false);
   }, [pathname]);
 
-  const solid = scrolled;
+  const forcedSolid = LIGHT_BACKGROUND_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+  const solid = scrolled || forcedSolid;
 
   return (
     <header
