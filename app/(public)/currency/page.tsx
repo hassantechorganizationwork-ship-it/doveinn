@@ -184,7 +184,8 @@ export default function CurrencyPage() {
       if (!res.ok) throw new Error("Bad response");
       const data: RatesResponse = await res.json();
       if (data.result !== "success") throw new Error("API returned an error");
-      const { [BASE_CURRENCY]: _base, ...otherRates } = data.rates;
+      const otherRates = { ...data.rates };
+      delete otherRates[BASE_CURRENCY];
       setRates(otherRates);
       setAsOfDate(data.time_last_update_utc);
     } catch {
