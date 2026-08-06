@@ -42,6 +42,11 @@ export function Navbar() {
   // component running its own getUser()/onAuthStateChange pair.
   const { user } = useAuth();
   const accountHref = user ? "/account" : "/account/login";
+  const guestInitial =
+    typeof user?.user_metadata?.full_name === "string" &&
+    user.user_metadata.full_name.trim()
+      ? user.user_metadata.full_name.trim().charAt(0).toUpperCase()
+      : user?.email?.charAt(0).toUpperCase();
 
   // Every page starts with a transparent navbar sitting on top of that
   // page's own dark header block, so there's no visible seam — it only
@@ -93,10 +98,16 @@ export function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           <Link
             href={accountHref}
-            className="flex items-center gap-1.5 rounded-full border border-primary-foreground/25 px-3.5 py-1.5 text-sm font-medium text-primary-foreground/90 transition-colors hover:border-gold hover:text-gold"
+            className="flex items-center gap-2 rounded-full border border-primary-foreground/25 px-3.5 py-1.5 text-sm font-medium text-primary-foreground/90 transition-colors hover:border-gold hover:text-gold"
           >
-            <User className="size-4" />
-            My Bookings
+            {user ? (
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-gold text-[11px] font-semibold text-gold-foreground">
+                {guestInitial}
+              </span>
+            ) : (
+              <User className="size-4" />
+            )}
+            {user ? "My Bookings" : "Login"}
           </Link>
           <WhatsAppButton />
           <Button
@@ -136,8 +147,14 @@ export function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-2 text-base font-medium text-primary"
               >
-                <User className="size-5" />
-                My Bookings
+                {user ? (
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xs font-semibold text-gold-text">
+                    {guestInitial}
+                  </span>
+                ) : (
+                  <User className="size-5" />
+                )}
+                {user ? "My Bookings" : "Login"}
               </Link>
               <Button
                 className="mt-4 bg-gold text-gold-foreground hover:bg-gold/90"
