@@ -82,7 +82,7 @@ export function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           <Link
             href={accountHref}
-            className="flex items-center gap-1.5 text-sm font-medium text-primary-foreground/90 transition-colors hover:text-gold"
+            className="flex items-center gap-1.5 rounded-full border border-primary-foreground/25 px-3.5 py-1.5 text-sm font-medium text-primary-foreground/90 transition-colors hover:border-gold hover:text-gold"
           >
             <User className="size-4" />
             My Bookings

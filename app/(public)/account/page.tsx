@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle2, X } from "lucide-react";
 import { differenceInCalendarDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -12,7 +13,41 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import type { BookingWithRoom } from "@/lib/supabase/bookings";
 
-export default function MyAccountPage() {
+function ConfirmedBanner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [dismissed, setDismissed] = useState(false);
+
+  if (searchParams.get("confirmed") !== "1" || dismissed) return null;
+
+  const dismiss = () => {
+    setDismissed(true);
+    router.replace("/account");
+  };
+
+  return (
+    <div className="mb-6 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3">
+      <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600" />
+      <div className="flex-1">
+        <p className="text-sm font-medium text-green-800">
+          Your email has been confirmed.
+        </p>
+        <p className="text-sm text-green-700">
+          Welcome to Dove Inn Hotel — your account is ready to use.
+        </p>
+      </div>
+      <button
+        onClick={dismiss}
+        aria-label="Dismiss"
+        className="shrink-0 text-green-600 hover:text-green-800"
+      >
+        <X className="size-4" />
+      </button>
+    </div>
+  );
+}
+
+function MyAccountContent() {
   const router = useRouter();
 
   // Shared with the Navbar via AuthContext, instead of this page running
@@ -68,16 +103,25 @@ export default function MyAccountPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
+      <ConfirmedBanner />
+
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="font-heading text-3xl text-primary">My Bookings</h1>
+        <div className="flex items-center gap-4">
           {guest && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              Logged in as{" "}
-              <span className="font-medium text-primary">{guest.name}</span>{" "}
-              ({guest.email})
-            </p>
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gold/15 font-heading text-lg text-gold-text">
+              {guest.name.charAt(0).toUpperCase()}
+            </div>
           )}
+          <div>
+            <h1 className="font-heading text-3xl text-primary">My Bookings</h1>
+            {guest && (
+              <p className="mt-1 text-sm text-muted-foreground">
+                Logged in as{" "}
+                <span className="font-medium text-primary">{guest.name}</span>{" "}
+                ({guest.email})
+              </p>
+            )}
+          </div>
         </div>
 
         {confirmingLogout ? (
@@ -203,5 +247,13 @@ export default function MyAccountPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function MyAccountPage() {
+  return (
+    <Suspense fallback={null}>
+      <MyAccountContent />
+    </Suspense>
   );
 }
