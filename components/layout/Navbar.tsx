@@ -96,19 +96,31 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href={accountHref}
-            className="flex items-center gap-2 rounded-full border border-primary-foreground/25 px-3.5 py-1.5 text-sm font-medium text-primary-foreground/90 transition-colors hover:border-gold hover:text-gold"
-          >
-            {user ? (
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-gold text-[11px] font-semibold text-gold-foreground">
-                {guestInitial}
-              </span>
-            ) : (
-              <User className="size-4" />
+          <div className="group relative">
+            <Link
+              href={accountHref}
+              className="flex items-center gap-2 rounded-full border border-primary-foreground/25 px-3.5 py-1.5 text-sm font-medium text-primary-foreground/90 transition-colors hover:border-gold hover:text-gold"
+            >
+              {user ? (
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-gold text-[11px] font-semibold text-gold-foreground">
+                  {guestInitial}
+                </span>
+              ) : (
+                <User className="size-4" />
+              )}
+              {user ? "My Bookings" : "Login"}
+            </Link>
+
+            {user && (
+              <div
+                role="tooltip"
+                className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground opacity-0 shadow-md transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100"
+              >
+                You&apos;re logged in as {user.email}
+                <div className="absolute -top-1 left-1/2 size-2 -translate-x-1/2 rotate-45 bg-primary" />
+              </div>
             )}
-            {user ? "My Bookings" : "Login"}
-          </Link>
+          </div>
           <WhatsAppButton />
           <Button
             className="bg-gold text-gold-foreground hover:bg-gold/90"
