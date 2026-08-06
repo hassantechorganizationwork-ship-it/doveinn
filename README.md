@@ -6,6 +6,10 @@ A full-stack hotel booking website for a 12-room boutique hotel in Lahore, Pakis
 
 **[https://doveinn-five.vercel.app/](https://doveinn-five.vercel.app/)**
 
+[![CI](https://github.com/hassantechorganizationwork-ship-it/doveinn/actions/workflows/ci.yml/badge.svg)](https://github.com/hassantechorganizationwork-ship-it/doveinn/actions/workflows/ci.yml)
+
+Read the [case study](./CASE_STUDY.md) for the problem this solves, the tech choices behind it, and a real challenge hit along the way.
+
 ---
 
 ## Architecture Overview

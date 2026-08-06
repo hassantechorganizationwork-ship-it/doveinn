@@ -31,14 +31,14 @@ describe("Navbar", () => {
     }
   });
 
-  it("points the My Bookings link at /account/login when signed out", async () => {
+  it("points the account link at /account/login when signed out", async () => {
     render(
       <AuthProvider>
         <Navbar />
       </AuthProvider>
     );
 
-    const links = await screen.findAllByRole("link", { name: /my bookings/i });
+    const links = await screen.findAllByRole("link", { name: /login/i });
     for (const link of links) {
       expect(link).toHaveAttribute("href", "/account/login");
     }
