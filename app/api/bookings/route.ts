@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendBookingEmails } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
         advance_amount,
         special_requests: special_requests || null,
       })
-      .select()
+      .select("*, rooms(name)")
       .single();
 
     if (error || !data) {
@@ -60,6 +61,20 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Guest receipt + hotel notification. Never let an email hiccup fail
+    // the booking itself — the booking is already saved at this point.
+    sendBookingEmails({
+      bookingRef: ref,
+      guestName: guest_name,
+      guestEmail: guest_email,
+      guestPhone: guest_phone,
+      roomName: data.rooms?.name ?? "Room",
+      checkIn: check_in,
+      checkOut: check_out,
+      totalAmount: total_amount,
+      advanceAmount: advance_amount,
+    }).catch((err) => console.error("sendBookingEmails failed:", err));
 
     return NextResponse.json({ success: true, booking_ref: ref });
   } catch (err) {

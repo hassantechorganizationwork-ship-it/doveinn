@@ -25,6 +25,7 @@ function hasLightBackground(pathname: string) {
   if (pathname === "/account" || pathname.startsWith("/account/")) return true;
   if (pathname === "/booking" || pathname.startsWith("/booking/")) return true;
   if (pathname.startsWith("/rooms/")) return true;
+  if (pathname === "/track" || pathname.startsWith("/receipt/")) return true;
   return false;
 }
 
@@ -33,6 +34,7 @@ const NAV_LINKS = [
   { href: "/rooms", label: "Rooms" },
   { href: "/gallery", label: "Gallery" },
   { href: "/currency", label: "Currency" },
+  { href: "/track", label: "Track Booking" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];

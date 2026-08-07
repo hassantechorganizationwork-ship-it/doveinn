@@ -32,7 +32,7 @@ export function BookingDetail({ booking }: { booking: BookingWithRoom }) {
   const [notes, setNotes] = useState(booking.manager_notes ?? "");
   const [message, setMessage] = useState<string | null>(null);
   const [loadingAction, setLoadingAction] = useState<
-    "confirm" | "reject" | "notes" | null
+    "confirm" | "reject" | "notes" | "payment" | null
   >(null);
 
   const nights = differenceInCalendarDays(
@@ -65,6 +65,16 @@ export function BookingDetail({ booking }: { booking: BookingWithRoom }) {
     const result = await callApi({ action: "reject" });
     setLoadingAction(null);
     setMessage(result.success ? "Booking rejected." : result.error ?? "Something went wrong.");
+    if (result.success) router.refresh();
+  };
+
+  const handleSetPaymentStatus = async (status: PaymentStatus) => {
+    setLoadingAction("payment");
+    const result = await callApi({ action: "set_payment_status", payment_status: status });
+    setLoadingAction(null);
+    setMessage(
+      result.success ? "Payment status updated." : result.error ?? "Something went wrong."
+    );
     if (result.success) router.refresh();
   };
 
@@ -208,6 +218,45 @@ export function BookingDetail({ booking }: { booking: BookingWithRoom }) {
               >
                 {PAYMENT_STATUS_LABELS[booking.payment_status]}
               </Badge>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-2">
+              {booking.payment_status !== "advance_paid" && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={loadingAction !== null}
+                  onClick={() => handleSetPaymentStatus("advance_paid")}
+                  className="border-green-600 text-green-700 hover:bg-green-600 hover:text-white"
+                >
+                  {loadingAction === "payment" && <Spinner />}
+                  Mark Advance Paid
+                </Button>
+              )}
+              {booking.payment_status !== "fully_paid" && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={loadingAction !== null}
+                  onClick={() => handleSetPaymentStatus("fully_paid")}
+                  className="border-green-600 text-green-700 hover:bg-green-600 hover:text-white"
+                >
+                  {loadingAction === "payment" && <Spinner />}
+                  Mark Fully Paid
+                </Button>
+              )}
+              {booking.payment_status !== "refunded" && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={loadingAction !== null}
+                  onClick={() => handleSetPaymentStatus("refunded")}
+                  className="border-destructive text-destructive hover:bg-destructive hover:text-white"
+                >
+                  {loadingAction === "payment" && <Spinner />}
+                  Mark Refunded
+                </Button>
+              )}
             </div>
           </div>
         </div>

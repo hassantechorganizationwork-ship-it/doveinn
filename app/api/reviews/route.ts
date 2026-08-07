@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // 5MB
@@ -7,8 +8,39 @@ const ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif
 
 type FieldErrors = Record<string, string>;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabase = createAdminClient();
+  const wantsAdminView = request.nextUrl.searchParams.get("admin") === "true";
+
+  // The manager portal asks for every review (no limit, plus guest_email so
+  // they can follow up directly) — but only once we've confirmed a real
+  // signed-in session, not just because the query param was set.
+  if (wantsAdminView) {
+    const authedClient = await createClient();
+    const {
+      data: { user },
+    } = await authedClient.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "You must be signed in to do that." },
+        { status: 401 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("id, guest_name, guest_email, rating, review_text, stay_date, photo_url, manager_reply, created_at, rooms(name)")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 500 }
+      );
+    }
+    return NextResponse.json({ success: true, data });
+  }
 
   // Public listing only exposes what's needed to display a review —
   // guest_email is deliberately left out (RLS also has no public SELECT
@@ -16,7 +48,7 @@ export async function GET() {
   // the only sanctioned read path).
   const { data, error } = await supabase
     .from("reviews")
-    .select("id, guest_name, rating, review_text, stay_date, photo_url, created_at, rooms(name)")
+    .select("id, guest_name, rating, review_text, stay_date, photo_url, manager_reply, created_at, rooms(name)")
     .order("created_at", { ascending: false })
     .limit(12);
 

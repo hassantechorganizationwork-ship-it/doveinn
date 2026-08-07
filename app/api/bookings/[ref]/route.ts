@@ -1,5 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendBookingConfirmedEmail } from "@/lib/email";
+
+// Public lookup for the "Track Booking" page and the receipt page — a
+// booking ref plus the exact guest email it was made under, so a guest can
+// check status or pull up their receipt without needing an account.
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ ref: string }> }
+) {
+  const { ref } = await params;
+  const email = request.nextUrl.searchParams.get("email");
+
+  const supabase = createAdminClient();
+  const { data: booking, error } = await supabase
+    .from("bookings")
+    .select("*, rooms(name, type)")
+    .eq("booking_ref", ref)
+    .maybeSingle();
+
+  if (error) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+
+  if (
+    !booking ||
+    (email && booking.guest_email.toLowerCase() !== email.trim().toLowerCase())
+  ) {
+    return NextResponse.json(
+      { success: false, error: "No booking found with that reference and email." },
+      { status: 404 }
+    );
+  }
+
+  return NextResponse.json({ success: true, data: booking });
+}
 
 export async function PATCH(
   request: NextRequest,
@@ -7,9 +42,38 @@ export async function PATCH(
 ) {
   const { ref } = await params;
   const body = await request.json();
-  const { action, manager_notes } = body;
+  const { action, manager_notes, payment_status } = body;
 
   const supabase = createAdminClient();
+
+  const VALID_PAYMENT_STATUSES = [
+    "pending",
+    "advance_paid",
+    "fully_paid",
+    "refunded",
+  ];
+
+  if (action === "set_payment_status") {
+    if (!VALID_PAYMENT_STATUSES.includes(payment_status)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid payment status" },
+        { status: 400 }
+      );
+    }
+
+    const { error } = await supabase
+      .from("bookings")
+      .update({ payment_status, updated_at: new Date().toISOString() })
+      .eq("booking_ref", ref);
+
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 500 }
+      );
+    }
+    return NextResponse.json({ success: true });
+  }
 
   if (action !== "confirm" && action !== "reject") {
     if (typeof manager_notes === "string") {
@@ -35,7 +99,7 @@ export async function PATCH(
 
   const { data: booking, error: fetchError } = await supabase
     .from("bookings")
-    .select("*")
+    .select("*, rooms(name)")
     .eq("booking_ref", ref)
     .single();
 
@@ -85,6 +149,16 @@ export async function PATCH(
         }))
       );
     }
+
+    sendBookingConfirmedEmail({
+      bookingRef: booking.booking_ref,
+      guestName: booking.guest_name,
+      guestEmail: booking.guest_email,
+      roomName: booking.rooms?.name ?? "Room",
+      checkIn: booking.check_in,
+      checkOut: booking.check_out,
+      advanceAmount: booking.advance_amount,
+    }).catch((err) => console.error("sendBookingConfirmedEmail failed:", err));
   }
 
   return NextResponse.json({ success: true });

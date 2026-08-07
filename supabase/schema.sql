@@ -62,6 +62,7 @@ CREATE TABLE reviews (
   rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
   review_text TEXT NOT NULL,
   photo_url TEXT,
+  manager_reply TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -109,6 +110,10 @@ CREATE POLICY "Availability is publicly readable"
 -- reserved for the manager portal / service role, not exposed publicly.
 CREATE POLICY "Anyone can submit a review"
   ON reviews FOR INSERT WITH CHECK (true);
+
+-- Reviews: only managers can add/edit a reply
+CREATE POLICY "Authenticated users can update reviews"
+  ON reviews FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 
 -- SEED ROOMS DATA
 INSERT INTO rooms (name, slug, type, price_per_night, capacity, amenities) VALUES

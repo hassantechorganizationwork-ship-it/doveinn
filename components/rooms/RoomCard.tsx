@@ -18,6 +18,7 @@ export type Room = {
   price: number;
   capacity: number;
   amenities: string[];
+  bookedToday?: boolean;
 };
 
 const ROOM_IMAGES: Record<Room["type"], string> = {
@@ -49,6 +50,16 @@ export function RoomCard({ room }: { room: Room }) {
           )}
         >
           {room.type === "master" ? "Master" : "Twin"}
+        </Badge>
+        <Badge
+          className={cn(
+            "absolute top-3 right-3 border-none",
+            room.bookedToday
+              ? "bg-red-600 text-white"
+              : "bg-green-600 text-white"
+          )}
+        >
+          {room.bookedToday ? "Booked Today" : "Available"}
         </Badge>
       </div>
 

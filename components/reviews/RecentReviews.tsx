@@ -14,6 +14,7 @@ type ReviewRow = {
   review_text: string;
   stay_date: string;
   photo_url: string | null;
+  manager_reply: string | null;
   created_at: string;
   rooms: { name: string } | null;
 };
@@ -130,6 +131,16 @@ export function RecentReviews() {
                       sizes="(max-width: 640px) 100vw, 50vw"
                       className="object-cover"
                     />
+                  </div>
+                )}
+                {review.manager_reply && (
+                  <div className="mt-1 rounded-lg bg-gold/10 p-3">
+                    <p className="text-xs font-semibold text-gold-text">
+                      Reply from Dove Inn Team
+                    </p>
+                    <p className="mt-1 text-sm text-primary">
+                      {review.manager_reply}
+                    </p>
                   </div>
                 )}
               </CardContent>

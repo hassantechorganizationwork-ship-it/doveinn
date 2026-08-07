@@ -16,6 +16,7 @@ type DbRoom = {
   price_per_night: number;
   capacity: number;
   is_active: boolean;
+  booked_today: boolean;
 };
 
 export default function PortalRoomsPage() {
@@ -207,12 +208,18 @@ export default function PortalRoomsPage() {
                       <td className="py-3 pr-4">
                         <Badge
                           className={
-                            room.is_active
-                              ? "border-none bg-green-600 text-white"
-                              : "border-none bg-muted text-muted-foreground"
+                            !room.is_active
+                              ? "border-none bg-muted text-muted-foreground"
+                              : room.booked_today
+                                ? "border-none bg-red-600 text-white"
+                                : "border-none bg-green-600 text-white"
                           }
                         >
-                          {room.is_active ? "Available" : "Inactive"}
+                          {!room.is_active
+                            ? "Inactive"
+                            : room.booked_today
+                              ? "Booked Today"
+                              : "Available"}
                         </Badge>
                       </td>
                       <td className="py-3 pr-4">

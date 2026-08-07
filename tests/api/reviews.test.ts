@@ -29,13 +29,17 @@ const validFields = {
   review_text: "Loved every bit of the stay here!",
 };
 
+function getRequest() {
+  return new NextRequest("http://localhost/api/reviews");
+}
+
 describe("GET /api/reviews", () => {
   it("returns recent reviews (happy path)", async () => {
     adminMock.current = createSupabaseMock([
       { data: [{ id: "r1", guest_name: "Ahmed" }], error: null },
     ]);
 
-    const res = await GET();
+    const res = await GET(getRequest());
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -47,7 +51,7 @@ describe("GET /api/reviews", () => {
       { data: null, error: { message: "db down" } },
     ]);
 
-    const res = await GET();
+    const res = await GET(getRequest());
     expect(res.status).toBe(500);
   });
 });
