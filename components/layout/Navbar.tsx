@@ -94,15 +94,22 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-primary-foreground/90 transition-colors hover:text-gold"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActive =
+              link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-gold",
+                  isActive ? "text-gold" : "text-primary-foreground/90"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -154,16 +161,23 @@ export function Navbar() {
               </SheetTitle>
             </SheetHeader>
             <nav className="mt-8 flex flex-col gap-6 px-6">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-base font-medium text-primary"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {NAV_LINKS.map((link) => {
+                const isActive =
+                  link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "text-base font-medium",
+                      isActive ? "text-gold-text" : "text-primary"
+                    )}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
               <Link
                 href={accountHref}
                 onClick={() => setMenuOpen(false)}
