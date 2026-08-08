@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, User } from "lucide-react";
@@ -79,11 +80,17 @@ export function Navbar() {
       )}
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-        <Link
-          href="/"
-          className="font-heading text-2xl tracking-wide text-gold"
-        >
-          Dove Inn
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/images/brand/icon-mark.png"
+            alt=""
+            width={40}
+            height={39}
+            className="size-9"
+          />
+          <span className="font-heading text-2xl tracking-wide text-gold">
+            Dove Inn
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
