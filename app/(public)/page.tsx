@@ -219,7 +219,7 @@ export default async function Home() {
             <span className="break-words">hassanshafiq03240041300@gmail.com</span>
           </div>
           <div className="flex items-center justify-center gap-2">
-            <MapPin className="size-4 text-gold" />
+            <MapPin className="size-4 shrink-0 translate-y-[2px] text-gold" />
             <span>Taiba Colony, Hazrat Ali Street, Dove Inn Hotel, Sharaqpur Sharif</span>
           </div>
         </div>
