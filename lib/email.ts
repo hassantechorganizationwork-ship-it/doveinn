@@ -139,6 +139,50 @@ function fullyPaidHtml(b: FullyPaidInput) {
   `;
 }
 
+type ContactMessageInput = {
+  fullName: string;
+  email: string;
+  subject: string;
+  message: string;
+};
+
+function contactMessageHtml(c: ContactMessageInput) {
+  return `
+    <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:24px;color:#1C1C1C;">
+      <h1 style="font-size:18px;margin:0 0 16px;">New contact form message</h1>
+      <table style="width:100%;border-collapse:collapse;">
+        <tr><td style="padding:6px 0;color:#7B7466;">From</td><td style="padding:6px 0;text-align:right;font-weight:bold;">${c.fullName}</td></tr>
+        <tr><td style="padding:6px 0;color:#7B7466;">Email</td><td style="padding:6px 0;text-align:right;">${c.email}</td></tr>
+        <tr><td style="padding:6px 0;color:#7B7466;">Subject</td><td style="padding:6px 0;text-align:right;">${c.subject}</td></tr>
+      </table>
+      <p style="margin-top:16px;color:#7B7466;">Message:</p>
+      <p style="white-space:pre-wrap;background:#F3F0E7;border-radius:6px;padding:12px;">${c.message}</p>
+      <p style="margin-top:16px;"><a href="mailto:${c.email}" style="color:#8A6D1F;">Reply directly →</a></p>
+    </div>
+  `;
+}
+
+export async function sendContactMessageEmail(input: ContactMessageInput) {
+  if (!resend || !HOTEL_EMAIL) {
+    console.warn("RESEND_API_KEY or HOTEL_NOTIFICATION_EMAIL not set — contact message not delivered.");
+    return { delivered: false };
+  }
+
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: HOTEL_EMAIL,
+      replyTo: input.email,
+      subject: `Contact form: ${input.subject}`,
+      html: contactMessageHtml(input),
+    });
+    return { delivered: true };
+  } catch (err) {
+    console.error("sendContactMessageEmail failed:", err);
+    return { delivered: false };
+  }
+}
+
 export async function sendFullyPaidEmail(input: FullyPaidInput) {
   if (!resend) {
     console.warn("RESEND_API_KEY not set — skipping fully-paid email.");
