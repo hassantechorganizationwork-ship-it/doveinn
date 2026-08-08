@@ -40,6 +40,38 @@ export function BookingsTable({ bookings }: { bookings: BookingWithRoom[] }) {
       ? bookings
       : bookings.filter((b) => b.booking_status === FILTER_STATUS[filter]);
 
+  const handleExport = () => {
+    const headers = [
+      "Booking Ref", "Guest Name", "Email", "Phone", "Room",
+      "Check-in", "Check-out", "Nights", "Total", "Advance",
+      "Payment Status", "Booking Status", "Created At",
+    ];
+
+    const escape = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
+
+    const rows = filteredBookings.map((b) => {
+      const nights = differenceInCalendarDays(new Date(b.check_out), new Date(b.check_in));
+      return [
+        b.booking_ref, b.guest_name, b.guest_email, b.guest_phone,
+        b.rooms?.name ?? "", b.check_in, b.check_out, nights,
+        b.total_amount, b.advance_amount, b.payment_status, b.booking_status,
+        b.created_at,
+      ].map(escape).join(",");
+    });
+
+    const csv = [headers.map(escape).join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const dateStamp = new Date().toISOString().split("T")[0];
+    a.href = url;
+    a.download = `dove-inn-bookings-${filter.toLowerCase().replace(" ", "-")}-${dateStamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const updateStatus = async (ref: string, action: "confirm" | "reject") => {
     setPendingRef(ref);
     setPendingAction(action);
@@ -63,6 +95,8 @@ export function BookingsTable({ bookings }: { bookings: BookingWithRoom[] }) {
         <h1 className="font-heading text-3xl text-primary">All Bookings</h1>
         <Button
           variant="outline"
+          onClick={handleExport}
+          disabled={filteredBookings.length === 0}
           className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
         >
           Export

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendBookingConfirmedEmail } from "@/lib/email";
+import { sendBookingConfirmedEmail, sendFullyPaidEmail } from "@/lib/email";
 
 // Public lookup for the "Track Booking" page and the receipt page — a
 // booking ref plus the exact guest email it was made under, so a guest can
@@ -61,10 +61,12 @@ export async function PATCH(
       );
     }
 
-    const { error } = await supabase
+    const { data: updated, error } = await supabase
       .from("bookings")
       .update({ payment_status, updated_at: new Date().toISOString() })
-      .eq("booking_ref", ref);
+      .eq("booking_ref", ref)
+      .select("*, rooms(name)")
+      .maybeSingle();
 
     if (error) {
       return NextResponse.json(
@@ -72,6 +74,20 @@ export async function PATCH(
         { status: 500 }
       );
     }
+
+    if (payment_status === "fully_paid" && updated) {
+      sendFullyPaidEmail({
+        bookingRef: updated.booking_ref,
+        guestName: updated.guest_name,
+        guestEmail: updated.guest_email,
+        roomName: updated.rooms?.name ?? "Room",
+        checkIn: updated.check_in,
+        checkOut: updated.check_out,
+        totalAmount: updated.total_amount,
+        advanceAmount: updated.advance_amount,
+      }).catch((err) => console.error("sendFullyPaidEmail failed:", err));
+    }
+
     return NextResponse.json({ success: true });
   }
 

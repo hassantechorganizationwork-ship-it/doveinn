@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 import { differenceInCalendarDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -73,7 +73,11 @@ export function BookingDetail({ booking }: { booking: BookingWithRoom }) {
     const result = await callApi({ action: "set_payment_status", payment_status: status });
     setLoadingAction(null);
     setMessage(
-      result.success ? "Payment status updated." : result.error ?? "Something went wrong."
+      result.success
+        ? status === "fully_paid"
+          ? "Payment status updated. A receipt email has been sent to the guest."
+          : "Payment status updated."
+        : result.error ?? "Something went wrong."
     );
     if (result.success) router.refresh();
   };
@@ -205,7 +209,9 @@ export function BookingDetail({ booking }: { booking: BookingWithRoom }) {
                 Remaining at Hotel
               </span>
               <span className="font-medium text-primary">
-                Rs {remaining.toLocaleString()}
+                {booking.payment_status === "fully_paid"
+                  ? "Rs 0 — Paid in Full"
+                  : `Rs ${remaining.toLocaleString()}`}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -258,6 +264,25 @@ export function BookingDetail({ booking }: { booking: BookingWithRoom }) {
                 </Button>
               )}
             </div>
+
+            {booking.payment_status !== "pending" && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="mt-1 w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                render={
+                  <Link
+                    href={`/receipt/${booking.booking_ref}?email=${encodeURIComponent(booking.guest_email)}`}
+                    target="_blank"
+                  />
+                }
+              >
+                <FileText className="size-4" />
+                {booking.payment_status === "fully_paid"
+                  ? "View / Download Full Receipt"
+                  : "View / Download Receipt"}
+              </Button>
+            )}
           </div>
         </div>
 

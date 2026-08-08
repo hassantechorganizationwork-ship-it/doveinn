@@ -51,6 +51,17 @@ export default function ReceiptPage() {
     };
   }, [params.ref, email]);
 
+  const loadImageAsDataUrl = async (src: string): Promise<string> => {
+    const res = await fetch(src);
+    const blob = await res.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
   const handleDownload = async () => {
     if (!booking) return;
     setDownloading(true);
@@ -61,37 +72,53 @@ export default function ReceiptPage() {
         new Date(booking.check_out),
         new Date(booking.check_in)
       );
-      const remaining = booking.total_amount - booking.advance_amount;
+      const remainingDue = booking.total_amount - booking.advance_amount;
+      const isFullyPaid = booking.payment_status === "fully_paid";
 
       const gold: [number, number, number] = [138, 109, 31];
+      const green: [number, number, number] = [21, 128, 61];
       const ink: [number, number, number] = [28, 28, 28];
       const grey: [number, number, number] = [123, 116, 102];
 
-      let y = 60;
-      doc.setFont("times", "bold");
-      doc.setFontSize(22);
-      doc.setTextColor(...ink);
-      doc.text("Dove Inn Hotel", 48, y);
+      let y = 66;
+      try {
+        const logoDataUrl = await loadImageAsDataUrl("/images/brand/logo-dark.png");
+        // Source is 1538x1022 (~1.5:1) — rendered at a fixed width so it
+        // stays crisp without distorting the aspect ratio.
+        doc.addImage(logoDataUrl, "PNG", 48, 32, 96, 63.7);
+      } catch {
+        // If the logo fails to load (e.g. offline), fall back to text so
+        // the receipt still generates instead of throwing.
+        doc.setFont("times", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(...ink);
+        doc.text("Dove Inn Hotel", 48, y);
+      }
 
-      y += 22;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
       doc.setTextColor(...grey);
-      doc.text("Booking Receipt", 48, y);
+      doc.text("Booking Receipt", 400, 50, { align: "right" });
+      doc.text(
+        isFullyPaid ? "Status: Fully Paid" : "Status: Advance Received",
+        400,
+        66,
+        { align: "right" }
+      );
 
-      y += 8;
+      y = 115;
       doc.setDrawColor(...gold);
       doc.setLineWidth(1.2);
       doc.line(48, y, 547, y);
 
-      const row = (label: string, value: string, bold = false) => {
+      const row = (label: string, value: string, bold = false, color = ink) => {
         y += 26;
         doc.setFont("helvetica", "normal");
         doc.setFontSize(11);
         doc.setTextColor(...grey);
         doc.text(label, 48, y);
         doc.setFont("helvetica", bold ? "bold" : "normal");
-        doc.setTextColor(...ink);
+        doc.setTextColor(...color);
         doc.text(value, 547, y, { align: "right" });
       };
 
@@ -110,11 +137,27 @@ export default function ReceiptPage() {
       doc.line(48, y, 547, y);
 
       row("Total Amount", `Rs ${booking.total_amount.toLocaleString()}`);
-      row("Advance Paid", `Rs ${booking.advance_amount.toLocaleString()}`, true);
-      row("Remaining (payable at hotel)", `Rs ${remaining.toLocaleString()}`);
+      row("Advance Paid (bank transfer)", `Rs ${booking.advance_amount.toLocaleString()}`);
+      if (isFullyPaid) {
+        row("Remaining Paid (cash at hotel)", `Rs ${remainingDue.toLocaleString()}`);
+      }
+
+      y += 14;
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.5);
+      doc.line(48, y, 547, y);
+
+      row(
+        isFullyPaid ? "Total Paid" : "Remaining (payable at hotel)",
+        `Rs ${(isFullyPaid ? booking.total_amount : remainingDue).toLocaleString()}`,
+        true,
+        isFullyPaid ? green : ink
+      );
       row(
         "Payment Status",
-        PAYMENT_LABELS[booking.payment_status] ?? booking.payment_status
+        PAYMENT_LABELS[booking.payment_status] ?? booking.payment_status,
+        true,
+        isFullyPaid ? green : ink
       );
 
       y += 50;
@@ -200,9 +243,23 @@ export default function ReceiptPage() {
                   Rs {booking.advance_amount.toLocaleString()}
                 </p>
               </div>
+              {booking.payment_status === "fully_paid" && (
+                <div>
+                  <p className="text-muted-foreground">Remaining Paid (cash)</p>
+                  <p className="mt-1 font-medium text-green-600">
+                    Rs {(booking.total_amount - booking.advance_amount).toLocaleString()}
+                  </p>
+                </div>
+              )}
               <div>
                 <p className="text-muted-foreground">Payment Status</p>
-                <p className="mt-1 font-medium text-primary">
+                <p
+                  className={`mt-1 font-medium ${
+                    booking.payment_status === "fully_paid"
+                      ? "text-green-600"
+                      : "text-primary"
+                  }`}
+                >
                   {PAYMENT_LABELS[booking.payment_status] ?? booking.payment_status}
                 </p>
               </div>
