@@ -117,6 +117,14 @@ CREATE POLICY "Public can read own booking by ref"
 CREATE POLICY "Availability is publicly readable"
   ON room_availability FOR SELECT USING (true);
 
+-- Contact messages: anyone can submit; manager portal reads/updates go
+-- through the admin (service role) client, not RLS — see the note on the
+-- reviews table's RLS above for why writes there switched to that pattern.
+ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can submit a contact message"
+  ON contact_messages FOR INSERT WITH CHECK (true);
+
 -- Reviews: anyone can submit one (no guest account required); reading is
 -- reserved for the manager portal / service role, not exposed publicly.
 CREATE POLICY "Anyone can submit a review"

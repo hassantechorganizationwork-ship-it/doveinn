@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, LayoutDashboard, CalendarCheck, BedDouble, Sparkles, BarChart3, LogOut, MessageSquareText } from "lucide-react";
+import { Menu, LayoutDashboard, CalendarCheck, BedDouble, Sparkles, BarChart3, LogOut, MessageSquareText, Mail } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -21,6 +21,7 @@ const NAV_LINKS = [
   { href: "/dashboard/rooms", label: "Rooms", icon: BedDouble },
   { href: "/dashboard/amenities", label: "Amenities", icon: Sparkles },
   { href: "/dashboard/reviews", label: "Reviews", icon: MessageSquareText },
+  { href: "/dashboard/messages", label: "Messages", icon: Mail },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
