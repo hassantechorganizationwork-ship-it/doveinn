@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 
@@ -16,7 +17,13 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-10 md:py-16">
         <div className="grid gap-8 md:grid-cols-3 md:gap-12">
           <div>
-            <h3 className="font-heading text-2xl text-gold">Dove Inn Hotel</h3>
+            <Image
+              src="/images/brand/logo-light.png"
+              alt="Dove Inn Hotel"
+              width={220}
+              height={147}
+              className="h-auto w-40"
+            />
             <p className="mt-3 max-w-xs text-sm text-primary-foreground/70">
               A boutique retreat offering quiet comfort and warm hospitality
               in the heart of the city.

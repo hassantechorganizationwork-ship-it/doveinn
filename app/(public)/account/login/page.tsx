@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -79,7 +80,13 @@ function LoginForm() {
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-20">
       <div className="text-center">
-        <p className="font-heading text-2xl text-gold-text">Dove Inn Hotel</p>
+        <Image
+          src="/images/brand/logo-dark.png"
+          alt="Dove Inn Hotel"
+          width={220}
+          height={147}
+          className="mx-auto h-auto w-40"
+        />
         <h1 className="mt-4 font-heading text-xl text-primary">
           Log In to Your Account
         </h1>
