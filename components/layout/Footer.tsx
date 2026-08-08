@@ -16,13 +16,13 @@ export function Footer() {
     <footer className="bg-primary text-primary-foreground">
       <div className="mx-auto max-w-7xl px-6 py-10 md:py-16">
         <div className="grid gap-8 md:grid-cols-3 md:gap-12">
-          <div>
+          <div className="flex flex-col items-center text-center md:items-start md:text-left">
             <Image
               src="/images/brand/logo-light.png"
               alt="Dove Inn Hotel"
-              width={220}
-              height={147}
-              className="h-auto w-40"
+              width={330}
+              height={220}
+              className="h-auto w-60"
             />
             <p className="mt-3 max-w-xs text-sm text-primary-foreground/70">
               A boutique retreat offering quiet comfort and warm hospitality
