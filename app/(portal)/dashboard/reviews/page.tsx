@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Star, Check, X, Pencil } from "lucide-react";
+import { Star, Check, X, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
@@ -90,6 +90,28 @@ export default function PortalReviewsPage() {
       setReviews((prev) => prev?.map((r) => (r.id === id ? json.data : r)) ?? prev);
       setEditingId(null);
       toast.success("Reply saved.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteReply = async (id: string) => {
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/reviews/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ manager_reply: null }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error ?? "Failed to delete reply.");
+      }
+      setReviews((prev) => prev?.map((r) => (r.id === id ? json.data : r)) ?? prev);
+      setEditingId(null);
+      toast.success("Reply deleted.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -197,15 +219,27 @@ export default function PortalReviewsPage() {
                         Reply from Dove Inn Team
                       </p>
                       <p className="mt-1 text-sm text-primary">{review.manager_reply}</p>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="mt-3"
-                        onClick={() => startReply(review)}
-                      >
-                        <Pencil className="size-3.5" />
-                        Edit Reply
-                      </Button>
+                      <div className="mt-3 flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={saving}
+                          onClick={() => startReply(review)}
+                        >
+                          <Pencil className="size-3.5" />
+                          Edit Reply
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={saving}
+                          onClick={() => deleteReply(review.id)}
+                          className="border-destructive text-destructive hover:bg-destructive hover:text-white"
+                        >
+                          <Trash2 className="size-3.5" />
+                          Delete Reply
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <Button

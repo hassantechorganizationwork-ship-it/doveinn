@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RoomCard, type Room } from "@/components/rooms/RoomCard";
 import { BookingSidebar } from "@/components/rooms/BookingSidebar";
+import { RoomInquiryForm } from "@/components/rooms/RoomInquiryForm";
 import { getRoomBySlug, getRoomSlugs, getRooms } from "@/lib/supabase/rooms";
 
 const ROOM_GALLERY: Record<Room["type"], string[]> = {
@@ -213,6 +214,11 @@ export default async function RoomDetailPage({
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* SEND A MAIL */}
+            <div className="mt-10">
+              <RoomInquiryForm roomName={room.name} />
             </div>
           </div>
 
