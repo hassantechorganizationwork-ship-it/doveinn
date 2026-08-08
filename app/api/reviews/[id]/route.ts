@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const supabase = await createClient();
+
+  // Auth check via the cookie-bound client (confirms who's asking); the
+  // actual write goes through the admin client below. reviews' RLS setup
+  // was fighting us for reasons that resisted every diagnostic — table
+  // owner, grants, and policy definitions all checked out, yet
+  // `authenticated` still saw 0 rows. Bypassing RLS here, the same way
+  // rooms/amenities/bookings admin writes already do, sidesteps that
+  // entirely instead of leaving manager replies silently broken.
+  const authClient = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await authClient.auth.getUser();
 
   if (!user) {
     return NextResponse.json(
@@ -17,6 +26,8 @@ export async function PATCH(
       { status: 401 }
     );
   }
+
+  const supabase = createAdminClient();
 
   let body: { manager_reply?: unknown };
   try {
