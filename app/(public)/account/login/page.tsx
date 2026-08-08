@@ -33,6 +33,9 @@ function LoginForm() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const [resending, setResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+
   const update = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: undefined }));
@@ -77,6 +80,29 @@ function LoginForm() {
     router.refresh();
   };
 
+  const handleResend = async () => {
+    setResendMessage(null);
+    if (!formData.email.trim() || !EMAIL_PATTERN.test(formData.email)) {
+      setResendMessage("Enter your email address above first, then tap resend.");
+      return;
+    }
+
+    setResending(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: formData.email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
+    });
+    setResending(false);
+
+    setResendMessage(
+      error
+        ? error.message
+        : "A new confirmation link has been sent — check your email."
+    );
+  };
+
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-20">
       <div className="text-center">
@@ -100,9 +126,26 @@ function LoginForm() {
       )}
 
       {confirmationFailed && (
-        <p className="mt-6 rounded-lg bg-destructive/10 px-4 py-3 text-center text-sm text-destructive">
-          That confirmation link is invalid or has expired. Please sign up
-          again or request a new link.
+        <div className="mt-6 rounded-lg bg-destructive/10 px-4 py-3 text-center text-sm text-destructive">
+          <p>That confirmation link is invalid or has expired.</p>
+          <p className="mt-1">
+            Enter your email below, then{" "}
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resending}
+              className="font-medium underline underline-offset-2 disabled:opacity-60"
+            >
+              {resending ? "sending..." : "resend the confirmation link"}
+            </button>
+            .
+          </p>
+        </div>
+      )}
+
+      {resendMessage && (
+        <p className="mt-3 rounded-lg bg-green-50 px-4 py-2 text-center text-sm text-green-700">
+          {resendMessage}
         </p>
       )}
 
